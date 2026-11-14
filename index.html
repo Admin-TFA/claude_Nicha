@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffd97a">
+<title>เช็คชื่อคลาส Claude AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
+<style>
+:root{
+  --g50:#fefce8;--g100:#fef9c3;--g200:#fef08a;--g300:#fde047;--g400:#facc15;--g500:#eab308;--g600:#ca8a04;--g700:#a16207;--g800:#854d0e;--g900:#713f12;
+  --on:#3b2405;--ink:#2b2007;--muted:#7a6a45;--line:#f2e9c9;--card:#ffffffe0;
+  --ok:#15803d;--ok-bg:#dcfce7;--amber:#c2410c;--amber-bg:#ffedd5;--rose:#e11d48;--rose-bg:#ffe4e6;
+  --r:18px;--shadow:0 1px 2px rgba(113,63,18,.05),0 8px 28px -10px rgba(161,98,7,.22);
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);--sal:env(safe-area-inset-left,0px);--sar:env(safe-area-inset-right,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{font-family:Mali,system-ui,-apple-system,sans-serif;color:var(--ink);background:#fffdf5;min-height:100vh;min-height:100dvh;line-height:1.5;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+   radial-gradient(40rem 28rem at 105% -5%,rgba(250,204,21,.28),transparent 60%),
+   radial-gradient(34rem 26rem at -10% 20%,rgba(253,186,116,.22),transparent 60%),
+   radial-gradient(36rem 30rem at 50% 115%,rgba(254,240,138,.35),transparent 60%),#fffdf5}
+h1,h2,h3,.display{font-family:Mali,system-ui,sans-serif;letter-spacing:-.01em}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+input,select{font-size:16px}
+.wrap{max-width:1240px;margin:0 auto;padding:calc(14px + var(--sat)) calc(16px + var(--sar)) calc(40px + var(--sab)) calc(16px + var(--sal))}
+
+/* top bar */
+.topbar{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0;user-select:none}
+.logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#fde047,#f59e0b);display:grid;place-items:center;box-shadow:0 6px 16px -6px rgba(217,119,6,.6);flex-shrink:0}
+.brand b{font-family:Mali;font-size:17px;display:block;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand small{color:var(--muted);font-size:12.5px;display:block}
+.tabs{display:flex;background:#fff;border:1px solid var(--line);border-radius:14px;padding:4px;gap:2px;box-shadow:var(--shadow)}
+.tabs button{border:0;background:transparent;padding:8px 14px;border-radius:10px;font-weight:600;font-size:14px;color:var(--muted);display:flex;gap:6px;align-items:center;min-height:38px}
+.tabs button.on{background:var(--g400);color:var(--on)}
+.mode-chip{font-size:12px;padding:4px 10px;border-radius:99px;background:var(--g50);color:var(--g700);border:1px solid var(--g100);white-space:nowrap;display:flex;align-items:center;gap:6px}
+.mode-chip i{width:7px;height:7px;border-radius:50%;background:var(--g500);box-shadow:0 0 0 3px rgba(234,179,8,.22)}
+.mode-chip.local{background:#fff7ed;color:#9a3412;border-color:#fed7aa}.mode-chip.local i{background:#f97316;box-shadow:0 0 0 3px rgba(249,115,22,.18)}
+
+/* hero */
+.hero{position:relative;overflow:hidden;border-radius:26px;padding:22px 24px;color:var(--on);
+  background:linear-gradient(125deg,#f59e0b 0%,#fbbf24 38%,#facc15 72%,#fde047 100%);box-shadow:0 18px 40px -18px rgba(217,119,6,.6);display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center}
+.hero::after{content:"";position:absolute;width:340px;height:340px;right:-90px;top:-150px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.45),transparent 65%)}
+.hero::before{content:"";position:absolute;width:260px;height:260px;left:-80px;bottom:-170px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.3),transparent 65%)}
+.hero>*{position:relative;z-index:1}
+.eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;background:rgba(255,255,255,.4);border:1px solid rgba(120,53,15,.15);padding:4px 11px;border-radius:99px;backdrop-filter:blur(6px)}
+.hero h1{margin:10px 0 2px;font-size:clamp(26px,4.2vw,38px);line-height:1.15}
+.hero .date{opacity:.85;font-size:15px}
+.clock{font-family:Mali;font-size:clamp(30px,5vw,46px);font-weight:600;letter-spacing:.01em;margin-top:10px;font-variant-numeric:tabular-nums;line-height:1}
+.clock small{font-size:.42em;opacity:.8;margin-left:4px;font-weight:500}
+.ring{width:132px;height:132px;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .lbl{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.ring .lbl b{font-family:Mali;font-size:30px;line-height:1}
+.ring .lbl span{font-size:12px;opacity:.85}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+.stat{background:var(--card);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;box-shadow:var(--shadow);display:flex;align-items:center;gap:12px}
+.stat .ic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex-shrink:0}
+.stat b{font-family:Mali;font-size:22px;display:block;line-height:1.1}
+.stat span{font-size:12.5px;color:var(--muted)}
+
+/* toolbar */
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px;position:sticky;top:0;z-index:20;padding:10px 0;background:linear-gradient(#fffdf5f2 70%,#fffdf500)}
+.search{flex:1 1 260px;position:relative}
+.search input{width:100%;height:48px;border-radius:14px;border:1.5px solid var(--line);background:#fff;padding:0 14px 0 44px;outline:none;transition:.15s;box-shadow:var(--shadow)}
+.search input:focus{border-color:var(--g400);box-shadow:0 0 0 4px rgba(250,204,21,.25)}
+.search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.seg{display:flex;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:4px;box-shadow:var(--shadow)}
+.seg button{border:0;background:none;padding:0 12px;height:38px;border-radius:10px;font-size:14px;font-weight:500;color:var(--muted);white-space:nowrap}
+.seg button.on{background:var(--g200);color:var(--on);font-weight:600}
+.sel{height:48px;border-radius:14px;border:1.5px solid var(--line);background:#fff;padding:0 12px;box-shadow:var(--shadow);outline:none;max-width:100%}
+
+.banner{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:14px;font-size:14px;margin-bottom:12px}
+.banner.info{background:var(--g50);border:1px solid var(--g100);color:var(--g800)}
+.banner.warn{background:#fffbeb;border:1px solid #fde68a;color:#92400e}
+
+/* grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.grid>*{min-width:0}
+html,body{overflow-x:hidden}
+.card{background:var(--card);backdrop-filter:blur(8px);border:1.5px solid var(--line);border-radius:var(--r);padding:14px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow);transition:transform .15s,border-color .15s,box-shadow .15s;cursor:pointer;min-height:84px;text-align:left;width:100%}
+.card:hover{transform:translateY(-2px);border-color:var(--g200)}
+.card:active{transform:scale(.99)}
+.card.done{background:linear-gradient(135deg,#fffbe6,#ffffff 70%);border-color:var(--g300)}
+.av{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;font-family:Mali;font-weight:600;font-size:20px;color:var(--on);flex-shrink:0;position:relative}
+.card.done .av::after{content:"";position:absolute;right:-4px;bottom:-4px;width:20px;height:20px;border-radius:50%;background:#16a34a url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/12px no-repeat;border:2.5px solid #fff}
+.info{flex:1;min-width:0}
+.nm{font-weight:600;font-size:15.5px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.sub{font-size:12.5px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tm{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:5px;font-size:13px;color:var(--ink);font-weight:500}
+.pill{font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:99px;white-space:nowrap}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+.pill.late{background:var(--amber-bg);color:var(--amber)}
+.pill.wait{background:#f5f1e4;color:var(--muted)}
+.btn-ci{border:0;background:linear-gradient(135deg,var(--g300),var(--g500));color:var(--on);font-weight:600;padding:0 16px;height:42px;border-radius:12px;font-size:14px;box-shadow:0 6px 14px -6px rgba(202,138,4,.75);white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:6px}
+.btn-ci[disabled]{background:#f1ede0;color:#a89c7c;box-shadow:none}
+.sigthumb{width:84px;height:42px;border-radius:10px;background:#fff;border:1px solid var(--line);object-fit:contain;flex-shrink:0;padding:2px}
+
+.empty{text-align:center;padding:48px 20px;background:var(--card);border:1.5px dashed var(--g200);border-radius:24px}
+.empty h3{margin:14px 0 4px;font-size:20px}
+.empty p{color:var(--muted);margin:0 auto 18px;max-width:420px}
+
+/* buttons */
+.btn{border:1.5px solid var(--line);background:#fff;border-radius:12px;height:44px;padding:0 16px;font-weight:600;font-size:14.5px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.15s;white-space:nowrap}
+.btn:hover{border-color:var(--g300);background:var(--g50)}
+.btn.pri{background:linear-gradient(135deg,var(--g300),var(--g500));border-color:transparent;color:var(--on);box-shadow:0 8px 18px -8px rgba(202,138,4,.8)}
+.btn.pri:hover{filter:brightness(1.05)}
+.btn.pri[disabled]{background:#f1ede0;color:#a89c7c;box-shadow:none;cursor:not-allowed}
+.btn.danger{color:var(--rose);border-color:#fecdd3}.btn.danger:hover{background:var(--rose-bg)}
+.btn.sm{height:36px;padding:0 12px;font-size:13px;border-radius:10px}
+.btn.ghost{border-color:transparent;background:transparent}
+
+/* admin */
+.admin{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.panel{background:var(--card);backdrop-filter:blur(8px);border:1.5px solid var(--line);border-radius:22px;padding:18px;box-shadow:var(--shadow);grid-column:span 6;min-width:0}
+.panel.wide{grid-column:span 12}
+.panel h2{font-size:17px;margin:0 0 4px;display:flex;align-items:center;gap:8px}
+.panel h2 .ic{width:30px;height:30px;border-radius:10px;background:var(--g100);color:var(--g700);display:grid;place-items:center}
+.panel>p.d{color:var(--muted);font-size:13.5px;margin:0 0 14px}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.field label{font-size:13px;font-weight:600;color:var(--g800)}
+.field input,.field select{height:46px;border-radius:12px;border:1.5px solid var(--line);padding:0 12px;outline:none;background:#fff;width:100%}
+.field input:focus{border-color:var(--g400);box-shadow:0 0 0 4px rgba(250,204,21,.22)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>.field{flex:1 1 140px}
+.drop{border:2px dashed var(--g300);border-radius:18px;background:linear-gradient(135deg,#fffbe6,#fff);padding:26px 16px;text-align:center;cursor:pointer;transition:.15s;display:block}
+.drop:hover,.drop.over{background:var(--g50);border-color:var(--g500)}
+.drop b{display:block;font-size:15.5px;margin-top:8px}
+.drop span{font-size:13px;color:var(--muted)}
+.preview{margin-top:14px;border:1.5px solid var(--g200);border-radius:16px;overflow:hidden;background:#fff}
+.preview .ph{padding:10px 14px;background:var(--g50);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px}
+.preview ol{margin:0;padding:8px 14px 8px 40px;max-height:220px;overflow:auto;font-size:14px}
+.preview ol li{padding:3px 0}
+.preview .pf{padding:12px 14px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.radio{display:flex;gap:8px;flex-wrap:wrap}
+.radio label{display:flex;align-items:center;gap:6px;font-size:14px;padding:8px 12px;border:1.5px solid var(--line);border-radius:12px;cursor:pointer}
+.radio input{accent-color:var(--g600);width:18px;height:18px}
+.roster-list{max-height:360px;overflow:auto;border:1px solid var(--line);border-radius:14px;background:#fff}
+.roster-list .it{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--line);font-size:14px}
+.roster-list .it:last-child{border-bottom:0}
+.roster-list .it .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.roster-list .it .c{color:var(--muted);font-size:12.5px}
+.iconbtn{width:36px;height:36px;border-radius:10px;border:0;background:transparent;display:grid;place-items:center;color:var(--muted);flex-shrink:0}
+.iconbtn:hover{background:var(--rose-bg);color:var(--rose)}
+.hint{font-size:12.5px;color:var(--muted);margin-top:8px}
+.steps{margin:0;padding-left:20px;font-size:14px;color:#5c4a1e}
+.steps li{margin:4px 0}
+code{background:var(--g50);border:1px solid var(--g100);padding:1px 6px;border-radius:6px;font-size:12.5px}
+
+/* modal */
+.ov{position:fixed;inset:0;background:rgba(43,32,7,.42);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;animation:fade .18s forwards}
+@keyframes fade{to{opacity:1}}
+.modal{background:#fff;border-radius:26px;width:100%;max-width:560px;max-height:calc(100dvh - 40px);overflow:auto;box-shadow:0 30px 70px -20px rgba(66,32,6,.45);transform:translateY(14px) scale(.98);animation:pop .22s cubic-bezier(.2,.9,.3,1.2) forwards;overscroll-behavior:contain}
+@keyframes pop{to{transform:none}}
+.mh{padding:18px 20px 0;display:flex;align-items:center;gap:12px}
+.mh .x{margin-left:auto;width:40px;height:40px;border-radius:12px;border:0;background:#faf5e4;display:grid;place-items:center;flex-shrink:0}
+.mb{padding:16px 20px}
+.mf{padding:0 20px 20px;display:flex;gap:10px}
+.mf .btn{flex:1;height:50px;font-size:15.5px}
+.who b{font-size:18px;display:block;line-height:1.25;font-family:Mali;font-weight:600}
+.who span{font-size:13px;color:var(--muted)}
+.timebox{display:flex;align-items:center;justify-content:space-between;gap:10px;background:linear-gradient(135deg,var(--g50),#fff7ed);border:1px solid var(--g200);border-radius:16px;padding:12px 16px;margin-bottom:14px}
+.timebox .t{font-family:Mali;font-size:28px;font-weight:600;color:var(--on);font-variant-numeric:tabular-nums;line-height:1.1}
+.timebox small{display:block;font-size:12.5px;color:var(--muted)}
+.siglbl{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-weight:600;font-size:14px;color:var(--g800)}
+.sigbox{position:relative;border:2px dashed var(--g300);border-radius:18px;background:repeating-linear-gradient(0deg,#fff 0 37px,#fdf6dc 37px 38px);height:220px;overflow:hidden}
+.sigbox canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
+.sigbox .ph{position:absolute;inset:0;display:grid;place-content:center;text-align:center;color:#b9a878;pointer-events:none;font-size:15px;gap:4px}
+.sigbox .base{position:absolute;left:24px;right:24px;bottom:46px;border-bottom:1.5px solid var(--g200);pointer-events:none}
+.sigbox .base::before{content:"✕";position:absolute;left:-2px;bottom:2px;color:var(--g300);font-size:14px}
+.success{text-align:center;padding:34px 20px 30px}
+.success .big{width:92px;height:92px;border-radius:50%;margin:0 auto 14px;background:linear-gradient(135deg,#fde047,#f59e0b);display:grid;place-items:center;box-shadow:0 0 0 12px var(--g100),0 16px 30px -10px rgba(217,119,6,.6);animation:bump .5s cubic-bezier(.2,.9,.3,1.4)}
+@keyframes bump{from{transform:scale(.4)}to{transform:scale(1)}}
+.success h3{font-size:24px;margin:8px 0 2px}
+.success p{color:var(--muted);margin:0}
+.sigview{width:100%;height:200px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:16px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14.5px;margin-bottom:14px}
+.kv dt{color:var(--muted)}.kv dd{margin:0;font-weight:500}
+textarea.out{width:100%;height:160px;border-radius:12px;border:1.5px solid var(--line);padding:10px;font:13px/1.4 ui-monospace,monospace}
+.pin{display:flex;gap:10px;justify-content:center;margin:6px 0 4px}
+.pin input{width:56px;height:62px;text-align:center;font-size:26px;font-family:Mali;border-radius:14px;border:1.5px solid var(--line);outline:none}
+.pin input:focus{border-color:var(--g500);box-shadow:0 0 0 4px rgba(250,204,21,.25)}
+
+/* toast */
+.toasts{position:fixed;left:50%;bottom:calc(20px + var(--sab));transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:calc(100% - 32px);max-width:440px}
+.toast{background:var(--g900);color:#fff;padding:12px 18px;border-radius:14px;font-size:14.5px;box-shadow:0 12px 30px -10px rgba(0,0,0,.4);animation:tin .25s ease;display:flex;gap:8px;align-items:center}
+.toast.err{background:#9f1239}
+@keyframes tin{from{opacity:0;transform:translateY(10px)}}
+.foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:28px}
+.hidden{display:none!important}
+.kiosk-exit{position:fixed;right:calc(12px + var(--sar));bottom:calc(12px + var(--sab));z-index:30;border:1px solid var(--line);background:#ffffffcc;backdrop-filter:blur(6px);border-radius:12px;height:38px;padding:0 12px;font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
+
+/* tablet */
+@media (max-width:900px){
+  .panel{grid-column:span 12}
+  .stats{grid-template-columns:repeat(2,1fr)}
+}
+/* phone */
+@media (max-width:640px){
+  .wrap{padding-left:calc(12px + var(--sal));padding-right:calc(12px + var(--sar))}
+  .brand small{display:none}
+  .mode-chip span{display:none}
+  .mode-chip{padding:6px}
+  .tabs button{padding:8px 10px}
+  .tabs button .tl{display:none}
+  .hero{grid-template-columns:1fr;padding:18px;border-radius:22px}
+  .hero .ring{position:absolute;right:14px;top:14px;width:86px;height:86px}
+  .hero .ring .lbl b{font-size:20px}
+  .hero .ring .lbl span{font-size:10px}
+  .hero h1{padding-right:92px}
+  .stat{padding:10px 12px;gap:10px}
+  .stat .ic{width:32px;height:32px;border-radius:10px}
+  .stat b{font-size:19px}
+  .toolbar{gap:8px}
+  .toolbar{position:static;padding:4px 0}
+  .search{flex:1 1 100%}
+  .seg{flex:1 1 auto}.seg button{flex:1;padding:0 4px;font-size:13.5px}
+  .sel{flex:0 1 auto;max-width:42%;font-size:14px;padding:0 8px}
+  .grid{grid-template-columns:minmax(0,1fr);gap:10px}
+  .card{padding:12px;min-height:76px}
+  .av{width:44px;height:44px;font-size:18px;border-radius:13px}
+  .sigthumb{width:64px;height:36px}
+  .ov{align-items:flex-end;padding:0}
+  .modal{max-width:none;border-radius:26px 26px 0 0;max-height:94dvh;padding-bottom:var(--sab);transform:translateY(40px);animation:up .26s cubic-bezier(.2,.9,.3,1) forwards}
+  @keyframes up{to{transform:none}}
+  .modal::before{content:"";display:block;width:42px;height:5px;border-radius:9px;background:#e9dfbf;margin:8px auto 0}
+  .sigbox{height:200px}
+  .timebox .t{font-size:24px}
+  .panel{padding:16px;border-radius:20px}
+}
+@media (max-width:640px) and (orientation:landscape){ .sigbox{height:150px} }
+@media (min-width:1100px){ .grid{grid-template-columns:repeat(3,1fr)} }
+@media (hover:none){ .card:hover{transform:none} }
+@media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
+
+/* ================= Cute theme (น่ารักมุ้งมิ้ง) ================= */
+:root{--pink:#ff8fab;--pink-bg:#ffe5ec;--pink-ink:#e05f84;--mint:#d4f5e6;--mint-ink:#2f8f6a;--lav:#ebe4ff;--sky:#dcf0ff;--peach:#ffe6d3;
+ --g50:#fffbea;--g100:#fff3c4;--g200:#ffe7a0;--g300:#ffd97a;--g400:#ffcb52;--g500:#f9b938;--g600:#e8a21a;--g700:#b77a06;--g800:#7a4f12;--g900:#5a3e2b;
+ --on:#5a3e2b;--ink:#5a4632;--muted:#a58c72;--line:#f6e4cc;--card:#ffffffee;--ok:#2f8f6a;--ok-bg:#d4f5e6;--amber:#d0562a;--amber-bg:#ffe6d3;
+ --r:26px;--lift:0 3px 0 #f3dcbd;--shadow:0 3px 0 #f3dcbd,0 12px 26px -14px rgba(224,140,60,.3)}
+body{background:#fffaf2;font-family:Mali,system-ui,sans-serif}
+h1,h2,h3,.display{font-family:Mali,system-ui,sans-serif;letter-spacing:0;font-weight:700}
+body::before{background:
+  radial-gradient(circle at 2px 2px,rgba(255,160,185,.32) 1.6px,transparent 1.8px) 0 0/28px 28px,
+  radial-gradient(38rem 26rem at 105% -5%,rgba(255,214,107,.38),transparent 60%),
+  radial-gradient(32rem 24rem at -10% 25%,rgba(255,179,198,.3),transparent 60%),
+  radial-gradient(36rem 28rem at 50% 115%,rgba(201,242,223,.5),transparent 60%),#fffaf2}
+.deco{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.deco i{position:absolute;font-style:normal;opacity:.7;animation:floaty 7s ease-in-out infinite}
+.deco svg{display:block;filter:drop-shadow(0 2px 0 rgba(0,0,0,.04))}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-14px) rotate(10deg)}}
+.wrap{position:relative;z-index:1}
+
+/* top bar */
+.logo{width:48px;height:48px;border-radius:50%;background:#fff6d6;border:2.5px solid #ffe08a;box-shadow:0 3px 0 #f3d38f;padding:3px}
+.logo svg{width:100%;height:100%}
+.brand b{font-weight:700;font-size:18px;color:var(--on)}
+.brand small{color:var(--pink-ink)}
+.tabs{border-radius:999px;border:2px solid var(--line);padding:5px;box-shadow:var(--lift)}
+.tabs button{border-radius:999px;color:var(--muted)}
+.tabs button.on{background:linear-gradient(135deg,#ffe08a,#ffb9a0);color:var(--on);box-shadow:inset 0 -2px 0 rgba(0,0,0,.06)}
+.mode-chip{border-radius:999px;border-width:2px;font-weight:600}
+
+/* hero */
+.hero{border-radius:36px;border:3px solid #fff;background:linear-gradient(120deg,#ffe78f 0%,#ffd4a6 48%,#ffc6d6 100%);color:var(--on);
+  box-shadow:0 4px 0 #f1cf9e,0 24px 40px -24px rgba(240,130,90,.65)}
+.hero::after{background:radial-gradient(circle,rgba(255,255,255,.6),transparent 65%)}
+.hero::before{background:radial-gradient(circle,rgba(255,255,255,.45),transparent 65%)}
+.eyebrow{background:#fff;border:2px solid #ffd0dc;color:var(--pink-ink);font-weight:600;backdrop-filter:none}
+.hero h1{font-weight:700}
+.hero .date{opacity:1;color:#8a6446}
+.clock{font-weight:700;color:#7a4f12}
+.clock small{opacity:.7}
+.hero-side{display:flex;align-items:center;gap:4px}
+.mascot{position:relative;width:128px;height:128px;flex-shrink:0}
+.mascot svg{width:100%;height:100%;animation:bob 2.6s ease-in-out infinite;transform-origin:50% 92%}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-6px) rotate(3deg)}}
+.bubble{position:absolute;top:-8px;right:92%;background:#fff;border:2px solid #ffd0dc;border-radius:18px 18px 4px 18px;padding:6px 12px;font-size:13px;font-weight:600;color:var(--pink-ink);white-space:nowrap;box-shadow:0 3px 0 #ffe0e8}
+.ring{width:124px;height:124px}
+.ring .lbl b{font-weight:700;color:var(--pink-ink)}
+.ring .lbl span{color:#8a6446;opacity:1}
+
+/* stats */
+.stat{border:2px solid var(--line);border-radius:26px;box-shadow:var(--shadow)}
+.stat .ic{border-radius:50%;width:46px;height:46px;font-size:22px;line-height:1}
+.ic1{background:var(--sky)}.ic2{background:var(--pink-bg)}.ic3{background:var(--lav)}.ic4{background:var(--peach)}
+.stat b{font-weight:700;color:var(--on)}
+
+/* toolbar */
+.toolbar{background:linear-gradient(#fffaf2f2 70%,#fffaf200)}
+.search input,.sel{border-radius:999px;border:2px solid var(--line);box-shadow:var(--lift)}
+.search input{padding-left:46px}
+.search input:focus{border-color:#ffb3c6;box-shadow:0 0 0 4px rgba(255,143,171,.18)}
+.search svg{color:var(--pink)}
+.seg{border-radius:999px;border:2px solid var(--line);box-shadow:var(--lift)}
+.seg button{border-radius:999px}
+.seg button.on{background:var(--pink-bg);color:#d94d77}
+.banner{border-radius:20px;border-width:2px}
+
+/* cards */
+.card{border:2px solid var(--line);border-radius:28px;box-shadow:var(--shadow);transition:transform .25s cubic-bezier(.3,1.6,.5,1),box-shadow .2s,border-color .2s}
+.card:hover{transform:translateY(-3px) rotate(-.5deg);border-color:#ffd0dc;box-shadow:0 5px 0 #f8d5de,0 14px 26px -14px rgba(255,120,150,.35)}
+.card.done{background:linear-gradient(135deg,#fff0f4,#fffdf8 70%);border-color:#ffd0dc}
+.av{border-radius:50%;color:var(--on);font-weight:700;box-shadow:inset 0 -3px 0 rgba(0,0,0,.05),0 0 0 3px #fff}
+.card.done .av::after{background:var(--pink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.8 4.5c2.1 0 3.6 1.2 4.4 2.6.8-1.4 2.3-2.6 4.4-2.6 3.8 0 5.9 3.9 4.4 7.3C19.5 16.4 12 21 12 21z'/%3E%3C/svg%3E") center/11px no-repeat;border-color:#fff}
+.nm{font-weight:600;color:var(--on)}
+.btn-ci{border-radius:999px;background:linear-gradient(135deg,#ffe08a,#ffb9a0);color:var(--on);font-weight:700;box-shadow:0 3px 0 #ebb57a}
+.card:hover .btn-ci{animation:wiggle .5s}
+@keyframes wiggle{25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
+.btn-ci[disabled]{background:#f5ede1;color:#c2ae95;box-shadow:0 3px 0 #ece0cc}
+.pill{border-radius:999px;font-weight:600}
+.pill.ok{background:var(--mint);color:var(--mint-ink)}
+.pill.late{background:var(--peach);color:var(--amber)}
+.pill.wait{background:var(--lav);color:#7a68b8}
+.sigthumb{border-radius:16px;border:2px dashed #ffc6d4}
+.empty{border-radius:32px;border:2.5px dashed #ffc6d4}
+.empty .mascot{margin:0 auto;width:110px;height:110px}
+
+/* buttons, panels, forms */
+.btn{border-radius:999px;border:2px solid var(--line);box-shadow:var(--lift)}
+.btn:hover{border-color:#ffd0dc;background:#fff6f8}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 #f3dcbd}
+.btn.pri{background:linear-gradient(135deg,#ffe08a,#ffb9a0);color:var(--on);box-shadow:0 3px 0 #ebb57a;border-color:transparent}
+.btn.pri:hover{filter:brightness(1.03)}
+.btn.pri[disabled]{background:#f5ede1;color:#c2ae95;box-shadow:0 3px 0 #ece0cc}
+.btn.ghost{box-shadow:none;border-color:transparent}
+.btn.danger{color:#e0476f;border-color:#ffc6d4}
+.panel{border-radius:30px;border:2px solid var(--line);box-shadow:var(--shadow)}
+.panel h2 .ic{border-radius:50%;background:var(--pink-bg);color:var(--pink-ink)}
+.field label{color:#8a6446}
+.field input,.field select{border-radius:16px;border:2px solid var(--line)}
+.field input:focus{border-color:#ffb3c6;box-shadow:0 0 0 4px rgba(255,143,171,.16)}
+.drop{border:2.5px dashed #ffb3c6;border-radius:26px;background:linear-gradient(135deg,#fff0f4,#fffdf8)}
+.drop:hover,.drop.over{background:#fff0f4;border-color:var(--pink)}
+.drop svg{stroke:var(--pink)}
+.preview{border-radius:22px;border:2px solid #ffd0dc}.preview .ph{background:#fff0f4}
+.radio label{border-radius:999px;border-width:2px}
+.radio input{accent-color:var(--pink)}
+.roster-list{border-radius:20px;border:2px solid var(--line)}
+code{background:#fff0f4;border-color:#ffd0dc;color:#c94b72}
+.pin input{border-radius:18px;border:2px solid var(--line)}
+
+/* modal */
+.ov{background:rgba(90,62,43,.32)}
+.modal{border-radius:34px;border:3px solid #fff;box-shadow:0 6px 0 #f1d7b8,0 30px 70px -20px rgba(120,70,40,.45)}
+.mh .x{border-radius:50%;background:#fff0f4;color:var(--pink-ink)}
+.timebox{border-radius:24px;background:linear-gradient(135deg,#fff6d1,#ffe9ef);border:2px solid #ffe0a8}
+.timebox .t{color:#7a4f12;font-weight:700}
+.siglbl{color:#8a6446}
+.sigbox{border:2.5px dashed #ffb3c6;border-radius:26px;background:repeating-linear-gradient(0deg,#fffdfa 0 37px,#ffeef3 37px 38px)}
+.sigbox .ph{color:#e7a3b6}
+.sigbox .base{border-bottom-color:#ffc6d4}
+.sigbox .base::before{content:"♡";color:var(--pink)}
+.sigview{border-radius:22px;border:2px dashed #ffc6d4}
+.success{position:relative;overflow:hidden}
+.success .big{width:132px;height:132px;background:none;box-shadow:none;margin-bottom:6px}
+.success .big svg{width:100%;height:100%;animation:bob 1.2s ease-in-out infinite}
+.success h3{color:var(--pink-ink);font-size:26px}
+.confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.confetti span{position:absolute;top:-12%;animation:fall 2.4s ease-in forwards}
+@keyframes fall{to{transform:translateY(560px) rotate(var(--r,180deg));opacity:0}}
+.toast{background:#fff;color:var(--on);border:2px solid #ffd0dc;border-radius:999px;box-shadow:0 4px 0 #ffe0e8,0 14px 30px -12px rgba(120,70,40,.3);font-weight:500}
+.toast.err{border-color:#ffb3b3;color:#c0392b;box-shadow:0 4px 0 #ffe0e0,0 14px 30px -12px rgba(120,70,40,.3)}
+.kiosk-exit{border-radius:999px;border:2px solid var(--line)}
+.foot{color:var(--muted)}
+
+@media (max-width:900px){.bubble{display:none}.mascot{width:104px;height:104px}}
+@media (max-width:640px){
+  .hero{border-radius:30px}
+  .hero-side{position:absolute;right:12px;top:12px}
+  .hero .ring{position:static;width:84px;height:84px}
+  .hero .mascot{display:none}
+  .deco i:nth-child(n+5){display:none}
+  .modal{border-radius:30px 30px 0 0;border-bottom:0}
+}
+</style>
+</head>
+<body>
+<div class="deco" aria-hidden="true"><i style="left:3%;top:16%;animation-delay:-1s"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9z" fill="#ffd66b" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg></i><i style="right:4%;top:40%;animation-delay:-3s"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.8 4.5c2.1 0 3.6 1.2 4.4 2.6.8-1.4 2.3-2.6 4.4-2.6 3.8 0 5.9 3.9 4.4 7.3C19.5 16.4 12 21 12 21z" fill="#ffb3c6"/></svg></i><i style="left:6%;top:64%;animation-delay:-2s"><svg width="30" height="30" viewBox="0 0 24 24"><g fill="#d9ccff"><circle cx="12" cy="6" r="4"/><circle cx="18" cy="11" r="4"/><circle cx="15.5" cy="18" r="4"/><circle cx="8.5" cy="18" r="4"/><circle cx="6" cy="11" r="4"/></g><circle cx="12" cy="12.5" r="3.2" fill="#ffd66b"/></svg></i><i style="right:9%;top:80%;animation-delay:-5s"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9z" fill="#b8ecd4" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg></i><i style="left:48%;top:3%;animation-delay:-4s"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.8 4.5c2.1 0 3.6 1.2 4.4 2.6.8-1.4 2.3-2.6 4.4-2.6 3.8 0 5.9 3.9 4.4 7.3C19.5 16.4 12 21 12 21z" fill="#ffc9d6"/></svg></i><i style="right:28%;top:92%;animation-delay:-6s"><svg width="24" height="24" viewBox="0 0 24 24"><g fill="#ffc2d4"><circle cx="12" cy="6" r="4"/><circle cx="18" cy="11" r="4"/><circle cx="15.5" cy="18" r="4"/><circle cx="8.5" cy="18" r="4"/><circle cx="6" cy="11" r="4"/></g><circle cx="12" cy="12.5" r="3.2" fill="#ffd66b"/></svg></i><i style="left:22%;top:88%;animation-delay:-2.5s"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9z" fill="#ffe08a" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg></i></div>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand" id="brand">
+      <div class="logo"><svg viewBox="0 0 120 120" aria-hidden="true"><ellipse cx="60" cy="111" rx="28" ry="5" fill="#e8a75d" opacity=".22"/><path d="M48 100v6M44 107h8M72 100v6M68 107h8" stroke="#ff9a3c" stroke-width="3.5" stroke-linecap="round" fill="none"/><path d="M21 66c-9 3-11 15-3 19 6 2 10-6 9-13" fill="#ffc933"/><path d="M99 66c9 3 11 15 3 19-6 2-10-6-9-13" fill="#ffc933"/><ellipse cx="60" cy="66" rx="40" ry="38" fill="#ffd84d"/><ellipse cx="60" cy="76" rx="25" ry="21" fill="#ffeaa0"/><path d="M55 31c-3-8 1-14 7-14-2 4-1 8 2 10 1-5 5-7 9-6-3 2-4 6-3 10z" fill="#ffd84d"/><ellipse cx="45" cy="58" rx="5" ry="6" fill="#4a3426"/><circle cx="46.8" cy="55.6" r="1.8" fill="#fff"/><ellipse cx="75" cy="58" rx="5" ry="6" fill="#4a3426"/><circle cx="76.8" cy="55.6" r="1.8" fill="#fff"/><ellipse cx="35" cy="70" rx="7" ry="4.5" fill="#ff9fb8" opacity=".75"/><ellipse cx="85" cy="70" rx="7" ry="4.5" fill="#ff9fb8" opacity=".75"/><path d="M54 65q6 9 12 0q-6-3.5-12 0z" fill="#ff9a3c"/><g transform="translate(78 33) rotate(20)"><path d="M0 0l-10-7v14zM0 0l10-7v14z" fill="#ff8fab"/><circle r="3.4" fill="#ff6f96"/></g></svg></div>
+      <div style="min-width:0"><b id="brandName">Claude AI Class</b><small>ระบบเช็คชื่อผู้เข้าเรียน ♡</small></div>
+    </div>
+    <div class="mode-chip local" id="modeChip"><i></i><span id="modeTxt">กำลังเชื่อมต่อ…</span></div>
+    <div class="tabs" id="tabs">
+      <button data-v="checkin" class="on"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M16 11l2 2 4-4"/></svg><span class="tl">เช็คชื่อ</span></button>
+      <button data-v="admin" id="tabAdmin"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="tl">จัดการ</span></button>
+    </div>
+  </div>
+
+  <!-- CHECK-IN VIEW -->
+  <section id="vCheckin">
+    <div class="hero">
+      <div>
+        <span class="eyebrow">🌼 <span id="heroSession">คาบเรียนวันนี้</span></span>
+        <h1 id="heroTitle">Claude AI</h1>
+        <div class="date" id="heroDate"></div>
+        <div class="clock" id="clock">--:--<small>น.</small></div>
+      </div>
+      <div class="hero-side"><div class="mascot"><svg viewBox="0 0 120 120" aria-hidden="true"><ellipse cx="60" cy="111" rx="28" ry="5" fill="#e8a75d" opacity=".22"/><path d="M48 100v6M44 107h8M72 100v6M68 107h8" stroke="#ff9a3c" stroke-width="3.5" stroke-linecap="round" fill="none"/><path d="M21 66c-9 3-11 15-3 19 6 2 10-6 9-13" fill="#ffc933"/><path d="M99 66c9 3 11 15 3 19-6 2-10-6-9-13" fill="#ffc933"/><ellipse cx="60" cy="66" rx="40" ry="38" fill="#ffd84d"/><ellipse cx="60" cy="76" rx="25" ry="21" fill="#ffeaa0"/><path d="M55 31c-3-8 1-14 7-14-2 4-1 8 2 10 1-5 5-7 9-6-3 2-4 6-3 10z" fill="#ffd84d"/><ellipse cx="45" cy="58" rx="5" ry="6" fill="#4a3426"/><circle cx="46.8" cy="55.6" r="1.8" fill="#fff"/><ellipse cx="75" cy="58" rx="5" ry="6" fill="#4a3426"/><circle cx="76.8" cy="55.6" r="1.8" fill="#fff"/><ellipse cx="35" cy="70" rx="7" ry="4.5" fill="#ff9fb8" opacity=".75"/><ellipse cx="85" cy="70" rx="7" ry="4.5" fill="#ff9fb8" opacity=".75"/><path d="M54 65q6 9 12 0q-6-3.5-12 0z" fill="#ff9a3c"/><g transform="translate(78 33) rotate(20)"><path d="M0 0l-10-7v14zM0 0l10-7v14z" fill="#ff8fab"/><circle r="3.4" fill="#ff6f96"/></g></svg><div class="bubble">มาเช็คชื่อกันน้า~ ♡</div></div><div class="ring">
+        <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="12"/><circle id="ringArc" cx="60" cy="60" r="50" fill="none" stroke="#ff8fab" stroke-width="12" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="314.16" style="transition:stroke-dashoffset .6s ease"/></svg>
+        <div class="lbl"><b id="ringPct">0%</b><span>เข้าเรียนแล้ว</span></div>
+      </div></div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="ic ic1">👥</div><div><b id="sTotal">0</b><span>ผู้เรียนทั้งหมด</span></div></div>
+      <div class="stat"><div class="ic ic2">💖</div><div><b id="sDone">0</b><span>มาแล้ว</span></div></div>
+      <div class="stat"><div class="ic ic3">⏳</div><div><b id="sWait">0</b><span>ยังไม่มา</span></div></div>
+      <div class="stat"><div class="ic ic4">🐢</div><div><b id="sLate">0</b><span>มาสาย</span></div></div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="q" type="search" placeholder="ค้นหาชื่อ หรือบริษัท…" autocomplete="off" enterkeyhint="search">
+      </div>
+      <div class="seg" id="seg">
+        <button data-f="all" class="on">ทั้งหมด</button>
+        <button data-f="wait">ยังไม่มา</button>
+        <button data-f="done">มาแล้ว</button>
+      </div>
+      <select class="sel" id="sessionSel" aria-label="เลือกวันเรียน"></select>
+    </div>
+    <div id="banners"></div>
+    <div id="grid" class="grid"></div>
+  </section>
+
+  <!-- ADMIN VIEW -->
+  <section id="vAdmin" class="hidden">
+    <div class="panel wide hidden" id="lockPanel" style="max-width:520px;margin:10px auto">
+      <h2><span class="ic">🔐</span>สำหรับผู้ดูแล</h2>
+      <p class="d">กรอกรหัสผู้ดูแล (ADMIN_KEY ที่ตั้งไว้ใน Google Apps Script) เพื่อนำเข้ารายชื่อ ตั้งค่าคลาส และยกเลิกการเช็คชื่อ</p>
+      <form id="unlockForm"><div class="field"><label for="adminKeyIn">รหัสผู้ดูแล</label><input id="adminKeyIn" type="password" autocomplete="current-password"></div>
+      <button class="btn pri" id="btnUnlock" type="submit" style="width:100%">ปลดล็อก</button></form>
+    </div>
+    <div class="admin" id="adminGrid">
+      <div class="panel wide">
+        <h2><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg></span>นำเข้ารายชื่อผู้เรียน</h2>
+        <p class="d">รองรับไฟล์ CSV และ Excel (.xlsx / .xls) ระบบจะหาคอลัมน์ “ชื่อ”, “นามสกุล”, “รหัส”, “บริษัท” ให้อัตโนมัติ และรองรับไฟล์จาก Google Form ที่ลงทะเบียนหลายคนในแถวเดียว (ชื่อ-นามสกุล 2, 3, …)</p>
+        <label class="drop" id="drop">
+          <input type="file" id="file" accept=".csv,.xlsx,.xls,.tsv,.txt,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8M8 9h2"/></svg>
+          <b>แตะเพื่อเลือกไฟล์ หรือลากไฟล์มาวางที่นี่</b>
+          <span>.csv · .xlsx · .xls</span>
+        </label>
+        <div class="row" style="margin-top:10px;align-items:center">
+          <button class="btn sm" id="btnTemplate">⬇ ดาวน์โหลดไฟล์ตัวอย่าง</button>
+          <span class="hint" style="margin:0">ตัวอย่างหัวคอลัมน์: <code>รหัส</code> <code>ชื่อ</code> <code>นามสกุล</code> <code>ชื่อเล่น</code></span>
+        </div>
+        <div id="preview"></div>
+      </div>
+
+      <div class="panel">
+        <h2><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>ตั้งค่าคลาส</h2>
+        <p class="d">ใช้คำนวณว่าใคร “ตรงเวลา” หรือ “มาสาย”</p>
+        <div class="field"><label for="setName">ชื่อคลาส</label><input id="setName" maxlength="80"></div>
+        <div class="row">
+          <div class="field"><label for="setStart">เวลาเริ่มเรียน</label><input id="setStart" type="time"></div>
+          <div class="field"><label for="setLate">ถือว่าสายหลังจาก (นาที)</label><input id="setLate" type="number" min="0" max="240" inputmode="numeric"></div>
+        </div>
+        <button class="btn pri" id="btnSaveSet" style="width:100%">บันทึกการตั้งค่า</button>
+      </div>
+
+      <div class="panel">
+        <h2><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></span>เพิ่มรายชื่อทีละคน</h2>
+        <p class="d">สำหรับคนที่มาเพิ่มหน้างาน</p>
+        <div class="field"><label for="addName">ชื่อ-นามสกุล *</label><input id="addName" placeholder="เช่น สมชาย ใจดี" autocomplete="off"></div>
+        <div class="row">
+          <div class="field"><label for="addCode">รหัส (ถ้ามี)</label><input id="addCode" autocomplete="off"></div>
+          <div class="field"><label for="addNick">ชื่อเล่น (ถ้ามี)</label><input id="addNick" autocomplete="off"></div>
+        </div>
+        <div class="field"><label for="addOrg">บริษัท/หน่วยงาน (ถ้ามี)</label><input id="addOrg" autocomplete="off"></div>
+        <button class="btn pri" id="btnAdd" style="width:100%">+ เพิ่มรายชื่อ</button>
+      </div>
+
+      <div class="panel">
+        <h2><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg></span>ส่งออก / Google Sheet</h2>
+        <p class="d">ส่งออกข้อมูลการเข้าเรียนของวันที่เลือก (<span id="expDate"></span>)</p>
+        <a class="btn pri hidden" id="lnkSheet" target="_blank" rel="noopener" href="#" style="width:100%;margin-bottom:10px;text-decoration:none">↗ เปิด Google Sheet</a>
+        <div class="row" style="margin-bottom:10px">
+          <button class="btn pri" id="btnCopySheet" style="flex:1 1 200px">📋 คัดลอกไปวางใน Google Sheet</button>
+        </div>
+        <div class="row">
+          <button class="btn" id="btnCsv" style="flex:1">⬇ CSV</button>
+          <button class="btn" id="btnXlsx" style="flex:1">⬇ Excel</button>
+        </div>
+        <ol class="steps" style="margin-top:12px">
+          <li>กด “คัดลอก” แล้วเปิด Google Sheet</li>
+          <li>คลิกช่อง A1 แล้วกด <code>Ctrl/⌘ + V</code> ข้อมูลจะลงตามคอลัมน์ทันที</li>
+        </ol>
+        <p class="hint" id="sheetHint">ยังไม่ได้เชื่อม Google Sheet — ใส่ URL ของ Apps Script ในไฟล์ config.js เพื่อบันทึกอัตโนมัติ</p>
+      </div>
+
+      <div class="panel">
+        <h2><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></span>โหมดคีออสก์ (แท็บเล็ตหน้าห้อง)</h2>
+        <p class="d">ซ่อนเมนูจัดการ เหลือแค่หน้าเช็คชื่อ เหมาะกับการวางแท็บเล็ตให้ผู้เรียนเซ็นชื่อเอง ออกจากโหมดด้วยรหัส PIN 4 หลัก</p>
+        <button class="btn pri" id="btnKiosk" style="width:100%">เปิดโหมดคีออสก์บนเครื่องนี้</button>
+        <p class="hint" id="storeNote"></p>
+        <button class="btn sm hidden" id="btnLogout" style="margin-top:6px">ออกจากระบบผู้ดูแล</button>
+      </div>
+
+      <div class="panel wide">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+          <h2 style="margin:0"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span>รายชื่อทั้งหมด (<span id="rosterCount">0</span> คน)</h2>
+          <div style="margin-left:auto" class="row"><button class="btn sm danger" id="btnClearRoster">ลบรายชื่อทั้งหมด</button></div>
+        </div>
+        <div class="roster-list" id="rosterList"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="foot">made with ♡ for Claude AI Class</div>
+</div>
+
+<button class="kiosk-exit hidden" id="kioskExit">🔒 ออกจากโหมดคีออสก์</button>
+<div class="toasts" id="toasts"></div>
+
+<script src="config.js"></script>
+<script>
+"use strict";
+/* ---------- helpers ---------- */
+const MASCOT='<svg viewBox="0 0 120 120" aria-hidden="true"><ellipse cx="60" cy="111" rx="28" ry="5" fill="#e8a75d" opacity=".22"/><path d="M48 100v6M44 107h8M72 100v6M68 107h8" stroke="#ff9a3c" stroke-width="3.5" stroke-linecap="round" fill="none"/><path d="M21 66c-9 3-11 15-3 19 6 2 10-6 9-13" fill="#ffc933"/><path d="M99 66c9 3 11 15 3 19-6 2-10-6-9-13" fill="#ffc933"/><ellipse cx="60" cy="66" rx="40" ry="38" fill="#ffd84d"/><ellipse cx="60" cy="76" rx="25" ry="21" fill="#ffeaa0"/><path d="M55 31c-3-8 1-14 7-14-2 4-1 8 2 10 1-5 5-7 9-6-3 2-4 6-3 10z" fill="#ffd84d"/><ellipse cx="45" cy="58" rx="5" ry="6" fill="#4a3426"/><circle cx="46.8" cy="55.6" r="1.8" fill="#fff"/><ellipse cx="75" cy="58" rx="5" ry="6" fill="#4a3426"/><circle cx="76.8" cy="55.6" r="1.8" fill="#fff"/><ellipse cx="35" cy="70" rx="7" ry="4.5" fill="#ff9fb8" opacity=".75"/><ellipse cx="85" cy="70" rx="7" ry="4.5" fill="#ff9fb8" opacity=".75"/><path d="M54 65q6 9 12 0q-6-3.5-12 0z" fill="#ff9a3c"/><g transform="translate(78 33) rotate(20)"><path d="M0 0l-10-7v14zM0 0l10-7v14z" fill="#ff8fab"/><circle r="3.4" fill="#ff6f96"/></g></svg>';
+const $=s=>document.querySelector(s);
+const el=(tag,attrs={},...kids)=>{const e=document.createElement(tag);for(const[k,v]of Object.entries(attrs)){if(v==null||v===false)continue;if(k==='class')e.className=v;else if(k==='text')e.textContent=v;else if(k==='html')e.innerHTML=v;else if(k.startsWith('on'))e.addEventListener(k.slice(2),v);else e.setAttribute(k,v===true?'':v)}for(const c of kids.flat()){if(c==null||c===false)continue;e.append(c.nodeType?c:document.createTextNode(c))}return e};
+const pad=n=>String(n).padStart(2,'0');
+const dateKey=(d=new Date())=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const fromKey=k=>{const[y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d)};
+const thDate=k=>fromKey(k).toLocaleDateString('th-TH',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+const thShort=k=>fromKey(k).toLocaleDateString('th-TH',{weekday:'short',day:'numeric',month:'short',year:'2-digit'});
+const hm=ms=>{const d=new Date(ms);return `${pad(d.getHours())}:${pad(d.getMinutes())}`};
+const hms=ms=>{const d=new Date(ms);return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`};
+const uid=()=>'s'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const norm=s=>String(s??'').replace(/\s+/g,' ').trim();
+const PREFIX=/^(นางสาว|นาง|นาย|น\.ส\.|ด\.ช\.|ด\.ญ\.|ดร\.|mr\.?|mrs\.?|ms\.?|miss|dr\.?)\s*/i;
+function initial(name){let s=norm(name).replace(PREFIX,'');for(const ch of s){if(!/[เแโใไ\s"'(]/.test(ch))return ch.toUpperCase()}return '?'}
+const PALETTE=[['#ffe5ec','#ffc6d4'],['#fff3c4','#ffe08a'],['#d9f7e8','#b8ecd4'],['#ebe4ff','#d6c9ff'],['#dcf0ff','#bfe3ff'],['#ffe6d3','#ffcfa8'],['#fdf0c4','#fbd98a']];
+function avStyle(id){let h=0;for(const c of id)h=(h*31+c.charCodeAt(0))>>>0;const[a,b]=PALETTE[h%PALETTE.length];return `background:linear-gradient(135deg,${a},${b})`}
+function toast(msg,err){const t=el('div',{class:'toast'+(err?' err':'')},err?'🥺':'🌸',el('span',{text:msg}));$('#toasts').append(t);setTimeout(()=>t.remove(),3200)}
+const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+/* ---------- state ---------- */
+/* รายชื่อจะโหลดจาก Google Sheet (ชีต "รายชื่อ") หรือนำเข้าผ่านเมนู "จัดการ" */
+const SEED_ROSTER=[];
+const CFG=Object.assign({sheetsUrl:"",pollSeconds:8},window.ATTENDANCE_CONFIG||{});
+const DEFAULT_SETTINGS={className:'Claude AI',startTime:'09:00',lateMin:15};
+const S={roster:[],rosterLoaded:false,settings:{...DEFAULT_SETTINGS},checkins:{},sessions:[],date:dateKey(),view:'checkin',filter:'all',q:'',
+  mode:'local',canAdmin:true,canWrite:true,adminKey:'',adminOk:false,sheetUrl:'',net:'ok',pending:0,kiosk:ls.get('attn-kiosk',null),loadingNote:false,readonlyNote:false};
+
+/* ---------- stores ---------- */
+function LocalStore(){
+  const KEY='attn-local-v1';const data=ls.get(KEY,{})||{};data.sessions=data.sessions||{};
+  const L={};const save=()=>ls.set(KEY,data);
+  const emit=k=>{if(k==='roster'&&L.roster)L.roster(data.roster||null);if(k==='settings'&&L.settings)L.settings(data.settings||null);if(k==='sessions'&&L.sessions)L.sessions(Object.keys(data.sessions));if(k==='checkins'&&L.checkins)L.checkins(data.sessions[L.date]||{})};
+  return{kind:'local',
+    onRoster(cb){L.roster=cb;setTimeout(()=>emit('roster'));return()=>{L.roster=null}},
+    onSettings(cb){L.settings=cb;setTimeout(()=>emit('settings'));return()=>{L.settings=null}},
+    onSessions(cb){L.sessions=cb;setTimeout(()=>emit('sessions'));return()=>{L.sessions=null}},
+    onCheckins(date,cb){L.checkins=cb;L.date=date;setTimeout(()=>emit('checkins'));return()=>{L.checkins=null}},
+    async saveRoster(o){data.roster=o;save();emit('roster')},
+    async saveSettings(o){data.settings=o;save();emit('settings')},
+    async checkin(date,id,rec){(data.sessions[date]=data.sessions[date]||{})[id]=rec;save();emit('sessions');emit('checkins')},
+    async undo(date,id){if(data.sessions[date])delete data.sessions[date][id];save();emit('checkins')}
+  };
+}
+function DbStore(db){
+  return{kind:'db',
+    onRoster(cb,err){return db.doc('config/roster').onSnapshot(s=>cb(s.exists?s.data():null,s.metadata),err)},
+    onSettings(cb,err){return db.doc('config/settings').onSnapshot(s=>cb(s.exists?s.data():null),err)},
+    onSessions(cb,err){return db.collection('sessions').onSnapshot(q=>cb(q.docs.map(d=>d.id)),err)},
+    onCheckins(date,cb,err){return db.collection('sessions/'+date+'/checkins').onSnapshot(q=>{const o={};q.docs.forEach(d=>{o[d.id]=d.data()});cb(o,q.metadata)},err)},
+    saveRoster(o){return db.doc('config/roster').set(o)},
+    saveSettings(o){return db.doc('config/settings').set(o)},
+    async checkin(date,id,rec){await db.doc('sessions/'+date+'/checkins/'+id).set(rec);if(!S.sessions.includes(date)){try{await db.doc('sessions/'+date).set({date})}catch(e){}}},
+    undo(date,id){return db.doc('sessions/'+date+'/checkins/'+id).delete()}
+  };
+}
+function SheetsStore(url){
+  const L={};let date=null,ver='',data=null,timer=null,busy=false,again=false;
+  let queue=ls.get('attn-queue',[])||[];S.pending=queue.length;
+  const saveQ=()=>{ls.set('attn-queue',queue);S.pending=queue.length;setMode()};
+  async function call(method,payload){
+    let r;
+    try{
+      if(method==='GET'){const q=new URLSearchParams();for(const[k,v]of Object.entries(payload))if(v!=null&&v!=='')q.set(k,v);r=await fetch(url+(url.includes('?')?'&':'?')+q,{redirect:'follow',cache:'no-store'})}
+      else r=await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload),redirect:'follow'});
+    }catch(e){throw{code:'network'}}
+    if(!r.ok)throw{code:'network'};
+    let j;try{j=await r.json()}catch(e){throw{code:'server',message:'ตอบกลับไม่ใช่ JSON — ตรวจสอบ URL ใน config.js และการตั้งค่า Deploy (Who has access: Anyone)'}}
+    if(!j.ok)throw{code:j.code||'server',message:j.error};
+    return j;
+  }
+  function checkinsView(){const o=Object.assign({},(data&&data.checkins)||{});queue.filter(q=>q.date===date).forEach(q=>{if(!o[q.id])o[q.id]=Object.assign({},q.rec,{pending:true})});return o}
+  function emit(){if(!data)return;
+    L.roster&&L.roster({students:data.roster||[]},{fromCache:false});
+    L.settings&&L.settings(data.settings||null);
+    L.sessions&&L.sessions([...new Set([...(data.sessions||[]),...queue.map(q=>q.date)])]);
+    L.checkins&&L.checkins(checkinsView());}
+  async function flush(){
+    while(queue.length){const q=queue[0];
+      try{await call('POST',{action:'checkin',date:q.date,rec:q.rec});queue.shift();saveQ();ver=''}
+      catch(e){if(['network','busy','server'].includes(e.code))break;queue.shift();saveQ();toast('ส่งการเช็คชื่อของ '+(q.rec.name||'')+' ไม่สำเร็จ: '+(e.message||e.code),true)}}
+  }
+  async function poll(){
+    if(!date)return;if(busy){again=true;return}busy=true;
+    try{await flush();const j=await call('GET',{action:'state',date,v:ver});S.net='ok';S.loadingNote=false;S.netError='';
+      if(!j.unchanged){ver=String(j.version||'');data=j;emit()}else if(queue.length===0)emit()}
+    catch(e){S.net='off';S.netError=e.message||'';if(!data){S.loadingNote=true;render()}}
+    finally{busy=false;setMode();if(again){again=false;poll()}}
+  }
+  timer=setInterval(()=>{if(document.visibilityState!=='hidden')poll()},Math.max(3,+CFG.pollSeconds||8)*1000);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')poll()});
+  window.addEventListener('online',()=>poll());
+  return{kind:'sheets',
+    onRoster(cb){L.roster=cb;emit();return()=>{L.roster=null}},
+    onSettings(cb){L.settings=cb;emit();return()=>{L.settings=null}},
+    onSessions(cb){L.sessions=cb;emit();return()=>{L.sessions=null}},
+    onCheckins(d,cb){L.checkins=cb;if(d!==date){date=d;ver='';if(data)data=Object.assign({},data,{checkins:{}})}emit();poll();return()=>{L.checkins=null}},
+    async saveRoster(o){await call('POST',{action:'saveRoster',key:S.adminKey,students:o.students});ver='';await poll()},
+    async saveSettings(o){await call('POST',{action:'saveSettings',key:S.adminKey,settings:o});ver='';await poll()},
+    async checkin(d,id,rec){
+      queue=queue.filter(q=>!(q.date===d&&q.id===id));queue.push({date:d,id,rec});saveQ();emit();
+      try{await call('POST',{action:'checkin',date:d,rec});}
+      catch(e){if(['network','busy'].includes(e.code)){S.net='off';setMode();return{queued:true}}
+        queue=queue.filter(q=>!(q.date===d&&q.id===id));saveQ();emit();throw e}
+      queue=queue.filter(q=>!(q.date===d&&q.id===id));saveQ();S.net='ok';ver='';poll();return{}},
+    async undo(d,id){await call('POST',{action:'undo',key:S.adminKey,date:d,id});ver='';await poll()},
+    ping:key=>call('GET',{action:'ping',key}),
+    refresh(){ver='';poll()}
+  };
+}
+let store=null,unsubs=[],unsubCheckins=null,loadTimer=null;
+function onErr(e){console.warn('db',e);if(e&&e.code==='revoked'){S.readonlyNote=true;S.canWrite=false;render()}}
+function attach(st){
+  unsubs.forEach(u=>{try{u()}catch(e){}});unsubs=[];if(unsubCheckins){try{unsubCheckins()}catch(e){}}unsubCheckins=null;
+  store=st;
+  if(st.kind==='db'){clearTimeout(loadTimer);loadTimer=setTimeout(()=>{S.loadingNote=true;render()},10000)}
+  unsubs.push(st.onRoster((d,meta)=>{S.roster=(d&&Array.isArray(d.students))?d.students:SEED_ROSTER.slice();if(!meta||!meta.fromCache){S.rosterLoaded=true;S.loadingNote=false;clearTimeout(loadTimer)}else if(S.roster.length)S.rosterLoaded=true;render()},onErr));
+  unsubs.push(st.onSettings(d=>{S.settings={...DEFAULT_SETTINGS,...(d||{})};fillSettings();render()},onErr));
+  unsubs.push(st.onSessions(list=>{S.sessions=list;renderSessions()},onErr));
+  subCheckins();
+}
+function subCheckins(){if(unsubCheckins){try{unsubCheckins()}catch(e){}}S.checkins={};unsubCheckins=store.onCheckins(S.date,o=>{S.checkins=o||{};render()},onErr)}
+
+async function boot(){
+  if(CFG.sheetsUrl&&/^https?:\/\//.test(String(CFG.sheetsUrl).trim())){
+    S.mode='sheets';S.rosterLoaded=false;S.adminKey=ls.get('attn-admin-key','')||'';S.adminOk=!!S.adminKey;
+    attach(SheetsStore(String(CFG.sheetsUrl).trim()));setMode();render();
+    if(S.adminKey){try{const j=await store.ping(S.adminKey);S.adminOk=!!j.admin;S.sheetUrl=j.sheetUrl||'';if(!j.admin){S.adminKey='';ls.set('attn-admin-key','')}}catch(e){}render()}
+    return;
+  }
+  attach(LocalStore());
+  setMode();
+  if(!(window.claude&&typeof window.claude.use==='function'))return;
+  try{
+    const [db,user]=await Promise.all([claude.use('db'),claude.use('user')]);
+    if(db){
+      if(user){S.canAdmin=await user.canEdit();const w=await user.can('data.write');S.canWrite=w!==false}
+      S.mode='db';S.rosterLoaded=false;attach(DbStore(db));
+    }
+    setMode();render();
+  }catch(e){console.warn(e)}
+}
+function setMode(){
+  const c=$('#modeChip'),t=$('#modeTxt');
+  if(S.mode==='sheets'){const off=S.net==='off';c.className='mode-chip'+(off?' local':'');
+    t.textContent=off?('ออฟไลน์'+(S.pending?' · รอส่ง '+S.pending:'')):(S.pending?'กำลังส่ง '+S.pending+' รายการ':'Google Sheet');
+    c.title=off?'เชื่อมต่อ Google Sheet ไม่ได้ — การเช็คชื่อจะถูกเก็บไว้ในเครื่องและส่งให้อัตโนมัติเมื่อออนไลน์':'บันทึกลง Google Sheet แล้ว';
+    $('#storeNote').textContent='ข้อมูลบันทึกลง Google Sheet และทุกเครื่องเห็นตรงกัน (อัปเดตทุก '+(+CFG.pollSeconds||8)+' วินาที)';
+    const hs=$('#sheetHint');if(hs)hs.textContent='ทุกการเช็คชื่อถูกบันทึกลง Google Sheet อัตโนมัติแล้ว ปุ่มด้านบนใช้เมื่ออยากได้สำเนาแยก';
+    return}
+  if(S.mode==='db'){c.className='mode-chip';t.textContent='ซิงค์ออนไลน์';c.title='ข้อมูลซิงค์ทุกอุปกรณ์แบบเรียลไทม์'}
+  else{c.className='mode-chip local';t.textContent='บันทึกในเครื่องนี้';c.title='ข้อมูลเก็บเฉพาะในเบราว์เซอร์นี้'}
+  $('#storeNote').textContent=S.mode==='db'?'ข้อมูลถูกเก็บออนไลน์และซิงค์ทุกเครื่องแบบเรียลไทม์ — เปิดหน้านี้พร้อมกันได้ทั้งมือถือ แท็บเล็ต และคอมพิวเตอร์':'ตอนนี้ข้อมูลเก็บเฉพาะในเบราว์เซอร์นี้ เปิดหน้านี้จากลิงก์บน claude.ai เพื่อซิงค์ทุกอุปกรณ์';
+}
+
+/* ---------- derived ---------- */
+const isAdmin=()=>S.mode==='sheets'?(S.adminOk&&!S.kiosk):(S.canAdmin&&!S.kiosk);
+const showAdminTab=()=>S.mode==='sheets'?!S.kiosk:isAdmin();
+const isToday=()=>S.date===dateKey();
+function lateInfo(ms,date=S.date){
+  const[h,m]=(S.settings.startTime||'09:00').split(':').map(Number);const d=fromKey(date);d.setHours(h||0,m||0,0,0);
+  const diff=Math.round((ms-d.getTime())/60000);const late=diff>(+S.settings.lateMin||0);return{late,diff};
+}
+function rosterSorted(){return S.roster.slice()}
+function filtered(){
+  const q=norm(S.q).toLowerCase();
+  return rosterSorted().filter(s=>{
+    const done=!!S.checkins[s.id];
+    if(S.filter==='done'&&!done)return false;if(S.filter==='wait'&&done)return false;
+    if(!q)return true;return [s.name,s.code,s.nick,s.org].some(v=>String(v||'').toLowerCase().includes(q));
+  });
+}
+
+/* ---------- render ---------- */
+function render(){
+  $('#brandName').textContent=(S.settings.className||'Claude AI')+' Class';
+  $('#heroTitle').textContent=S.settings.className||'Claude AI';
+  $('#heroDate').textContent=thDate(S.date)+' · เริ่มเรียน '+(S.settings.startTime||'09:00')+' น.';
+  $('#heroSession').textContent=isToday()?'คาบเรียนวันนี้':'ย้อนดูคาบเรียน';
+  $('#clock').classList.toggle('hidden',!isToday());
+  $('#tabAdmin').classList.toggle('hidden',!showAdminTab());
+  $('#kioskExit').classList.toggle('hidden',!S.kiosk);
+  if(!showAdminTab()&&S.view==='admin')setView('checkin');
+  const locked=S.mode==='sheets'&&!S.adminOk;$('#lockPanel').classList.toggle('hidden',!locked);$('#adminGrid').classList.toggle('hidden',locked);
+  $('#lnkSheet').classList.toggle('hidden',!S.sheetUrl);if(S.sheetUrl)$('#lnkSheet').href=S.sheetUrl;$('#btnLogout').classList.toggle('hidden',!(S.mode==='sheets'&&S.adminOk));
+  const ids=new Set(S.roster.map(s=>s.id));
+  const doneRecs=Object.entries(S.checkins).filter(([id])=>ids.has(id));
+  const total=S.roster.length,done=doneRecs.length,late=doneRecs.filter(([,r])=>lateInfo(r.time).late).length;
+  $('#sTotal').textContent=total;$('#sDone').textContent=done;$('#sWait').textContent=Math.max(0,total-done);$('#sLate').textContent=late;
+  const pct=total?Math.round(done/total*100):0;$('#ringPct').textContent=pct+'%';$('#ringArc').style.strokeDashoffset=314.16*(1-pct/100);
+  $('#expDate').textContent=thShort(S.date);
+  renderBanners();renderGrid();renderRosterList();
+}
+function renderBanners(){
+  const b=$('#banners');b.textContent='';
+  if(S.loadingNote&&!S.rosterLoaded)b.append(el('div',{class:'banner warn'},'⏳ ',el('span',{text:S.mode==='sheets'?('เชื่อมต่อ Google Sheet ไม่ได้ — ตรวจสอบอินเทอร์เน็ต และ URL ในไฟล์ config.js'+(S.netError?' ('+S.netError+')':'')):'ยังเชื่อมต่อฐานข้อมูลไม่ได้ ตรวจสอบอินเทอร์เน็ตแล้วรอสักครู่'})));
+  if(S.mode==='local'&&!CFG.sheetsUrl&&isAdmin())b.append(el('div',{class:'banner info'},'💡 ',el('span',{text:'ตอนนี้บันทึกเฉพาะในเครื่องนี้ — ใส่ URL ของ Google Apps Script ในไฟล์ config.js เพื่อบันทึกลง Google Sheet และใช้ได้หลายเครื่องพร้อมกัน'})));
+  if(!isToday())b.append(el('div',{class:'banner info'},'📅 ',el('span',{text:'กำลังดูข้อมูลย้อนหลังของ '+thDate(S.date)+' (เช็คชื่อได้เฉพาะคาบของวันนี้)'})));
+  if(S.mode==='db'&&!S.canWrite)b.append(el('div',{class:'banner warn'},'🔒 ',el('span',{text:'บัญชีนี้ดูได้อย่างเดียว ขอสิทธิ์ Contributor จากผู้สอนเพื่อเช็คชื่อด้วยตัวเอง หรือเช็คชื่อที่แท็บเล็ตหน้าห้อง'})));
+}
+function renderGrid(){
+  const g=$('#grid');g.textContent='';
+  if((S.mode==='db'||S.mode==='sheets')&&!S.rosterLoaded&&!S.roster.length){g.append(el('div',{class:'empty',style:'grid-column:1/-1'},el('h3',{text:'กำลังโหลดรายชื่อ…'})));return}
+  if(!S.roster.length){
+    g.append(el('div',{class:'empty',style:'grid-column:1/-1'},
+      el('div',{class:'mascot',html:MASCOT}),
+      el('h3',{text:'ยังไม่มีรายชื่อผู้เรียนเลยน้า~'}),
+      el('p',{text:isAdmin()?'นำเข้ารายชื่อจากไฟล์ CSV หรือ Excel หรือเพิ่มทีละคนได้ที่เมนู “จัดการ”':'ผู้สอนยังไม่ได้เพิ่มรายชื่อ'}),
+      isAdmin()?el('button',{class:'btn pri',onclick:()=>setView('admin')},'นำเข้ารายชื่อ'):null));
+    return;
+  }
+  const list=filtered();
+  if(!list.length){g.append(el('div',{class:'empty',style:'grid-column:1/-1'},el('h3',{text:'ไม่พบรายชื่อ'}),el('p',{text:'ลองค้นหาด้วยคำอื่น หรือเปลี่ยนตัวกรอง'})));return}
+  const frag=document.createDocumentFragment();
+  for(const s of list){
+    const rec=S.checkins[s.id];const subBits=[s.code&&('รหัส '+s.code),s.nick&&('“'+s.nick+'”'),s.org].filter(Boolean).join(' · ');
+    const info=el('div',{class:'info'},el('div',{class:'nm',text:s.name}),subBits?el('div',{class:'sub',text:subBits}):null);
+    let right;
+    if(rec){
+      const li=lateInfo(rec.time);
+      info.append(el('div',{class:'tm'},el('span',{text:'🕘 มา '+hm(rec.time)+' น.'}),el('span',{class:'pill '+(li.late?'late':'ok'),text:li.late?('🐢 สาย '+li.diff+' นาที'):'⭐ ตรงเวลา'}),rec.pending?el('span',{class:'pill wait',text:'⏳ รอส่ง'}):null));
+      right=rec.sig?el('img',{class:'sigthumb',src:rec.sig,alt:'ลายเซ็น'}):null;
+    }else{
+      right=el('span',{class:'btn-ci',...((isToday()&&S.canWrite)?{}:{disabled:true})},isToday()?'เช็คชื่อ ♡':'ขาด');
+      if(!isToday()||!S.canWrite)right.setAttribute('disabled','');
+    }
+    const card=el('button',{class:'card'+(rec?' done':''),type:'button','aria-label':s.name,onclick:()=>rec?openDetail(s,rec):openCheckin(s)},
+      el('div',{class:'av',style:avStyle(s.id),text:initial(s.name)}),info,right);
+    frag.append(card);
+  }
+  g.append(frag);
+}
+function renderSessions(){
+  const sel=$('#sessionSel');const today=dateKey();
+  const all=[...new Set([today,S.date,...S.sessions])].filter(k=>/^\d{4}-\d{2}-\d{2}$/.test(k)).sort().reverse();
+  sel.textContent='';
+  for(const k of all)sel.append(el('option',{value:k,text:(k===today?'วันนี้ · ':'')+thShort(k),...(k===S.date?{selected:true}:{})}));
+}
+function renderRosterList(){
+  $('#rosterCount').textContent=S.roster.length;
+  const box=$('#rosterList');box.textContent='';
+  if(!S.roster.length){box.append(el('div',{class:'it',style:'color:var(--muted)'},'ยังไม่มีรายชื่อ'));return}
+  S.roster.forEach((s,i)=>box.append(el('div',{class:'it'},
+    el('span',{class:'c',text:String(i+1).padStart(2,'0')}),
+    el('span',{class:'n',text:s.name}),
+    el('span',{class:'c',text:[s.code,s.nick,s.org].filter(Boolean).join(' · ')}),
+    el('button',{class:'iconbtn',title:'ลบ','aria-label':'ลบ '+s.name,onclick:()=>confirmBox('ลบรายชื่อ','ลบ “'+s.name+'” ออกจากรายชื่อ?','ลบ',async()=>{await saveRoster(S.roster.filter(x=>x.id!==s.id));toast('ลบรายชื่อแล้ว')}),html:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>'}))));
+}
+function fillSettings(){
+  if(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('#vAdmin .panel')&&['setName','setStart','setLate'].includes(document.activeElement.id))return;
+  $('#setName').value=S.settings.className||'';$('#setStart').value=S.settings.startTime||'09:00';$('#setLate').value=S.settings.lateMin??15;
+}
+function setView(v){S.view=v;$('#vCheckin').classList.toggle('hidden',v!=='checkin');$('#vAdmin').classList.toggle('hidden',v!=='admin');
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));window.scrollTo({top:0,behavior:'smooth'})}
+
+/* ---------- clock ---------- */
+function tick(){const n=Date.now();$('#clock').innerHTML=`${hms(n)}<small>น.</small>`;document.querySelectorAll('[data-live]').forEach(e=>e.textContent=hms(n)+' น.');
+  const st=document.querySelector('[data-livestatus]');if(st){const li=lateInfo(n,dateKey());st.className='pill '+(li.late?'late':'ok');st.textContent=li.late?('🐢 สาย '+li.diff+' นาที'):'⭐ ตรงเวลา'}
+  if(S.date!==dateKey()&&S._wasToday){S._wasToday=false}}
+setInterval(tick,1000);
+
+/* ---------- modal ---------- */
+let modalClose=null;
+function openModal(content,{onClose}={}){
+  closeModal();
+  const ov=el('div',{class:'ov',role:'dialog','aria-modal':'true'});
+  const m=el('div',{class:'modal'});m.append(...content);ov.append(m);
+  ov.addEventListener('pointerdown',e=>{if(e.target===ov)ov._down=true});
+  ov.addEventListener('click',e=>{if(e.target===ov&&ov._down)closeModal();ov._down=false});
+  document.body.append(ov);document.body.style.overflow='hidden';
+  modalClose=()=>{ov.remove();document.body.style.overflow='';onClose&&onClose()};
+  return m;
+}
+function closeModal(){if(modalClose){const f=modalClose;modalClose=null;f()}}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+const xBtn=()=>el('button',{class:'x','aria-label':'ปิด',onclick:closeModal,html:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>'});
+function confirmBox(title,msg,okText,fn,danger=true){
+  openModal([el('div',{class:'mh'},el('div',{class:'who'},el('b',{text:title})),xBtn()),el('div',{class:'mb'},el('p',{style:'margin:0;color:#5c4a1e',text:msg})),
+    el('div',{class:'mf'},el('button',{class:'btn',onclick:closeModal},'ยกเลิก'),el('button',{class:'btn '+(danger?'danger':'pri'),onclick:async e=>{e.currentTarget.disabled=true;try{await fn()}catch(err){toast(errMsg(err),true)}closeModal()}},okText))]);
+}
+function errMsg(e){const c=e&&e.code;if(c==='forbidden'&&S.mode==='sheets'){S.adminOk=false;S.adminKey='';ls.set('attn-admin-key','');setTimeout(render)}if(c==='forbidden')return 'รหัสผู้ดูแลไม่ถูกต้อง — ปลดล็อกเมนูจัดการใหม่อีกครั้ง';if(c==='not_found')return (e.message||'ไม่พบข้อมูล');if(c==='busy')return 'ระบบกำลังยุ่ง ลองใหม่อีกครั้ง';if(c==='network')return 'เชื่อมต่อ Google Sheet ไม่ได้ ตรวจสอบอินเทอร์เน็ต';if(c==='server'||c==='bad_request')return e.message||'เซิร์ฟเวอร์ผิดพลาด';if(c==='invalid_argument')return 'ไม่มีสิทธิ์บันทึก หรือข้อมูลไม่ถูกต้อง';if(c==='quota_exceeded')return 'พื้นที่เก็บข้อมูลเต็ม';if(c==='resource_exhausted'||c==='rate_limited')return 'ใช้งานถี่เกินไป ลองใหม่อีกครั้ง';if(c==='unavailable')return 'เชื่อมต่อไม่ได้ชั่วคราว ลองใหม่อีกครั้ง';return 'เกิดข้อผิดพลาด ลองใหม่อีกครั้ง'}
+async function withRetry(fn){try{return await fn()}catch(e){if(e&&e.code==='unavailable'){await new Promise(r=>setTimeout(r,400+Math.random()*600));return fn()}throw e}}
+
+/* ---------- signature pad ---------- */
+function SigPad(canvas,onchange){
+  const ctx=canvas.getContext('2d');let strokes=[],cur=null,W=0,H=0;
+  function resize(){const r=canvas.getBoundingClientRect();if(!r.width)return;const dpr=Math.min(window.devicePixelRatio||1,3);W=r.width;H=r.height;canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);redraw()}
+  function drawStroke(c,pts,w,h,lw){if(!pts.length)return;c.lineWidth=lw;c.lineCap='round';c.lineJoin='round';c.strokeStyle='#5a3e2b';c.beginPath();
+    if(pts.length===1){c.arc(pts[0][0]*w,pts[0][1]*h,lw/2,0,Math.PI*2);c.fillStyle='#5a3e2b';c.fill();return}
+    c.moveTo(pts[0][0]*w,pts[0][1]*h);for(let i=1;i<pts.length-1;i++){const mx=(pts[i][0]+pts[i+1][0])/2*w,my=(pts[i][1]+pts[i+1][1])/2*h;c.quadraticCurveTo(pts[i][0]*w,pts[i][1]*h,mx,my)}
+    const l=pts[pts.length-1];c.lineTo(l[0]*w,l[1]*h);c.stroke()}
+  function lw(){return Math.max(2.2,Math.min(3.4,W/180))}
+  function redraw(){ctx.clearRect(0,0,W,H);strokes.forEach(s=>drawStroke(ctx,s,W,H,lw()))}
+  const pos=e=>{const r=canvas.getBoundingClientRect();return[(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height]};
+  canvas.addEventListener('pointerdown',e=>{e.preventDefault();try{canvas.setPointerCapture(e.pointerId)}catch(_){}cur=[pos(e)];strokes.push(cur);redraw();onchange&&onchange()});
+  canvas.addEventListener('pointermove',e=>{if(!cur)return;e.preventDefault();const evs=e.getCoalescedEvents?e.getCoalescedEvents():[e];for(const ev of (evs.length?evs:[e]))cur.push(pos(ev));redraw()});
+  const end=()=>{if(cur){cur=null;onchange&&onchange()}};
+  canvas.addEventListener('pointerup',end);canvas.addEventListener('pointercancel',end);canvas.addEventListener('lostpointercapture',end);
+  canvas.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+  const ro=new ResizeObserver(()=>resize());ro.observe(canvas);
+  return{resize,clear(){strokes=[];redraw();onchange&&onchange()},isEmpty(){return strokes.reduce((a,s)=>a+s.length,0)<4},
+    destroy(){ro.disconnect()},
+    toDataURL(){const ow=420,oh=Math.round(420*(H/W||0.37));const c=document.createElement('canvas');c.width=ow;c.height=oh;const x=c.getContext('2d');strokes.forEach(s=>drawStroke(x,s,ow,oh,3.2));
+      // crop to bounds
+      let minX=1,minY=1,maxX=0,maxY=0;strokes.flat().forEach(([a,b])=>{minX=Math.min(minX,a);minY=Math.min(minY,b);maxX=Math.max(maxX,a);maxY=Math.max(maxY,b)});
+      const p=14,sx=Math.max(0,minX*ow-p),sy=Math.max(0,minY*oh-p),sw=Math.min(ow,maxX*ow+p)-sx,sh=Math.min(oh,maxY*oh+p)-sy;
+      if(sw>10&&sh>10){const c2=document.createElement('canvas');c2.width=Math.round(sw);c2.height=Math.round(sh);c2.getContext('2d').drawImage(c,sx,sy,sw,sh,0,0,sw,sh);return c2.toDataURL('image/png')}
+      return c.toDataURL('image/png')}};
+}
+
+/* ---------- check-in flow ---------- */
+function openCheckin(s){
+  if(!isToday()){toast('เช็คชื่อได้เฉพาะคาบของวันนี้',true);return}
+  if(!S.canWrite){toast('บัญชีนี้ไม่มีสิทธิ์บันทึก',true);return}
+  let pad;
+  const ok=el('button',{class:'btn pri',disabled:true},'💖 ยืนยันเข้าเรียน');
+  const ph=el('div',{class:'ph'},el('div',{html:'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>'}),el('span',{text:'เซ็นชื่อตรงนี้น้า~ ✍️ ใช้นิ้วหรือเมาส์ก็ได้'}));
+  const canvas=el('canvas',{'aria-label':'ช่องเซ็นลายมือชื่อ'});
+  const box=el('div',{class:'sigbox'},el('div',{class:'base'}),ph,canvas);
+  const m=openModal([
+    el('div',{class:'mh'},el('div',{class:'av',style:avStyle(s.id),text:initial(s.name)}),el('div',{class:'who',style:'min-width:0'},el('b',{text:s.name}),el('span',{text:[s.code&&('รหัส '+s.code),s.nick&&('ชื่อเล่น '+s.nick),s.org].filter(Boolean).join(' · ')||'ผู้เรียนคลาส '+(S.settings.className||'Claude AI')})),xBtn()),
+    el('div',{class:'mb'},
+      el('div',{class:'timebox'},el('div',{},el('small',{text:'เวลาเช็คอิน'}),el('div',{class:'t','data-live':'',text:hms(Date.now())+' น.'})),el('span',{class:'pill ok','data-livestatus':''},'⭐ ตรงเวลา')),
+      el('div',{class:'siglbl'},el('span',{text:'🖊️ ลงลายมือชื่อ'}),el('button',{class:'btn sm ghost',onclick:()=>pad.clear()},'↺ ล้าง')),
+      box),
+    el('div',{class:'mf'},el('button',{class:'btn',onclick:closeModal},'ยกเลิก'),ok)
+  ],{onClose:()=>pad&&pad.destroy()});
+  pad=SigPad(canvas,()=>{const e=pad.isEmpty();ok.disabled=e;ph.style.display=e?'':'none'});
+  requestAnimationFrame(()=>pad.resize());tick();
+  ok.addEventListener('click',async()=>{
+    if(pad.isEmpty())return;ok.disabled=true;ok.textContent='กำลังบันทึก…';
+    const now=Date.now();const rec={sid:s.id,name:s.name,code:s.code||'',time:now,iso:new Date(now).toISOString(),sig:pad.toDataURL(),device:deviceKind()};
+    try{const r=await withRetry(()=>store.checkin(S.date,s.id,rec));showSuccess(s,rec);if(r&&r.queued)toast('เน็ตหลุด — บันทึกไว้ในเครื่องแล้ว จะส่งเข้า Google Sheet ให้อัตโนมัติ')}
+    catch(e){console.warn(e);toast(errMsg(e),true);ok.disabled=false;ok.textContent='💖 ยืนยันเข้าเรียน'}
+  });
+}
+function deviceKind(){const w=Math.min(screen.width,screen.height);return /Mobi|Android|iPhone/i.test(navigator.userAgent)&&w<600?'mobile':(navigator.maxTouchPoints>1&&w>=600?'tablet':'desktop')}
+function confetti(){const c=el('div',{class:'confetti','aria-hidden':'true'});const items=['🌸','💛','⭐','✨','💖','🌼','🎀'];for(let i=0;i<22;i++){c.append(el('span',{style:`left:${Math.random()*100}%;font-size:${14+Math.random()*14}px;animation-delay:${Math.random()*.6}s;--r:${Math.random()*540-270}deg`,text:items[i%items.length]}))}return c}
+function showSuccess(s,rec){
+  const li=lateInfo(rec.time);
+  const m=openModal([el('div',{class:'success'},
+    el('div',{class:'big',html:MASCOT}),confetti(),
+    el('h3',{class:'display',text:'เย้~ เช็คชื่อสำเร็จ! 🎉'}),
+    el('p',{text:s.name}),
+    el('p',{style:'margin-top:8px'},el('span',{class:'pill '+(li.late?'late':'ok'),style:'font-size:14px;padding:5px 14px',text:'มาเวลา '+hm(rec.time)+' น. · '+(li.late?'🐢 สาย '+li.diff+' นาที':'⭐ ตรงเวลา')})),
+    el('button',{class:'btn pri',style:'margin-top:20px;min-width:180px',onclick:closeModal},'เสร็จสิ้น'))]);
+  if(S.q){S.q='';$('#q').value=''}
+  const t=setTimeout(closeModal,S.kiosk?3500:6000);const prev=modalClose;modalClose=()=>{clearTimeout(t);prev()};
+}
+function openDetail(s,rec){
+  const li=lateInfo(rec.time);
+  const devTxt={mobile:'มือถือ',tablet:'แท็บเล็ต',desktop:'คอมพิวเตอร์'}[rec.device]||'-';
+  openModal([
+    el('div',{class:'mh'},el('div',{class:'av',style:avStyle(s.id),text:initial(s.name)}),el('div',{class:'who',style:'min-width:0'},el('b',{text:s.name}),el('span',{text:'เข้าเรียนแล้ว ✓'})),xBtn()),
+    el('div',{class:'mb'},
+      el('dl',{class:'kv'},el('dt',{text:'วันที่'}),el('dd',{text:thDate(S.date)}),el('dt',{text:'เวลาเช็คอิน'}),el('dd',{},hms(rec.time)+' น. ',el('span',{class:'pill '+(li.late?'late':'ok'),text:li.late?'🐢 สาย '+li.diff+' นาที':'⭐ ตรงเวลา'})),
+        s.code?el('dt',{text:'รหัส'}):null,s.code?el('dd',{text:s.code}):null,s.org?el('dt',{text:'บริษัท'}):null,s.org?el('dd',{text:s.org}):null,el('dt',{text:'เช็คอินจาก'}),el('dd',{text:devTxt})),
+      rec.sig?el('img',{class:'sigview',src:rec.sig,alt:'ลายเซ็นของ '+s.name}):el('p',{text:'ไม่มีลายเซ็น'})),
+    el('div',{class:'mf'},
+      isAdmin()?el('button',{class:'btn danger',onclick:()=>confirmBox('ยกเลิกการเช็คชื่อ','ยกเลิกการเช็คชื่อของ “'+s.name+'” ในวันนี้? ลายเซ็นจะถูกลบด้วย','ยกเลิกการเช็คชื่อ',async()=>{await withRetry(()=>store.undo(S.date,s.id));toast('ยกเลิกการเช็คชื่อแล้ว')})},'ยกเลิกการเช็คชื่อ'):null,
+      el('button',{class:'btn pri',onclick:closeModal},'ปิด'))
+  ]);
+}
+
+/* ---------- admin: settings / add / roster ---------- */
+async function saveRoster(list){await withRetry(()=>store.saveRoster({students:list,updatedAt:Date.now()}))}
+$('#btnSaveSet').onclick=async()=>{
+  const o={className:norm($('#setName').value)||'Claude AI',startTime:$('#setStart').value||'09:00',lateMin:Math.max(0,Math.min(240,parseInt($('#setLate').value,10)||0))};
+  try{await withRetry(()=>store.saveSettings(o));toast('บันทึกการตั้งค่าแล้ว')}catch(e){toast(errMsg(e),true)}
+};
+$('#btnAdd').onclick=async()=>{
+  const name=norm($('#addName').value);if(!name){$('#addName').focus();toast('กรุณากรอกชื่อ',true);return}
+  const code=norm($('#addCode').value),nick=norm($('#addNick').value),org=norm($('#addOrg').value);
+  if(S.roster.some(x=>x.name===name&&(x.code||'')===code)){toast('มีรายชื่อนี้อยู่แล้ว',true);return}
+  try{await saveRoster([...S.roster,{id:uid(),name,code,nick,org}]);['#addName','#addCode','#addNick','#addOrg'].forEach(k=>$(k).value='');toast('เพิ่ม “'+name+'” แล้ว')}catch(e){toast(errMsg(e),true)}
+};
+$('#btnClearRoster').onclick=()=>{if(!S.roster.length)return;confirmBox('ลบรายชื่อทั้งหมด','ลบรายชื่อทั้ง '+S.roster.length+' คน? (ประวัติการเช็คชื่อที่บันทึกไว้แล้วจะยังอยู่)','ลบทั้งหมด',async()=>{await saveRoster([]);toast('ลบรายชื่อทั้งหมดแล้ว')})};
+
+/* ---------- import ---------- */
+const drop=$('#drop'),fileIn=$('#file');
+['dragenter','dragover'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add('over')}));
+['dragleave','drop'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove('over')}));
+drop.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f)handleFile(f)});
+fileIn.addEventListener('change',()=>{const f=fileIn.files[0];if(f)handleFile(f);fileIn.value=''});
+
+function decodeText(buf){
+  const u8=new Uint8Array(buf);
+  if(u8[0]===0xFF&&u8[1]===0xFE)return new TextDecoder('utf-16le').decode(u8);
+  if(u8[0]===0xFE&&u8[1]===0xFF)return new TextDecoder('utf-16be').decode(u8);
+  try{return new TextDecoder('utf-8',{fatal:true}).decode(u8).replace(/^﻿/,'')}catch(e){}
+  try{return new TextDecoder('windows-874').decode(u8)}catch(e){return new TextDecoder('utf-8').decode(u8)}
+}
+function parseCSV(text){
+  const first=text.split(/\r?\n/).find(l=>l.trim())||'';
+  const delim=[',',';','\t','|'].map(d=>[d,first.split(d).length]).sort((a,b)=>b[1]-a[1])[0][0];
+  const rows=[];let row=[],f='',q=false;
+  for(let i=0;i<text.length;i++){const c=text[i];
+    if(q){if(c==='"'){if(text[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c==='"')q=true;else if(c===delim){row.push(f);f=''}
+    else if(c==='\n'||c==='\r'){if(c==='\r'&&text[i+1]==='\n')i++;row.push(f);rows.push(row);row=[];f=''}
+    else f+=c}
+  if(f!==''||row.length){row.push(f);rows.push(row)}
+  return rows;
+}
+async function handleFile(f){
+  try{
+    const buf=await f.arrayBuffer();let rows;
+    if(/\.(xlsx|xls|xlsm|ods)$/i.test(f.name)){
+      if(!window.XLSX){toast('ตัวอ่านไฟล์ Excel ยังโหลดไม่เสร็จ ลองอีกครั้ง หรือบันทึกเป็น CSV',true);return}
+      const wb=XLSX.read(buf,{type:'array'});const ws=wb.Sheets[wb.SheetNames[0]];
+      rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:''});
+    }else rows=parseCSV(decodeText(buf));
+    const people=extractPeople(rows);
+    if(!people.length){toast('ไม่พบรายชื่อในไฟล์นี้',true);return}
+    showPreview(people,f.name);
+  }catch(e){console.warn(e);toast('อ่านไฟล์ไม่สำเร็จ',true)}
+}
+function extractPeople(rows){
+  rows=rows.map(r=>r.map(c=>norm(c))).filter(r=>r.some(Boolean));if(!rows.length)return[];
+  const RX={nick:/ชื่อเล่น|nick/i,last:/^นามสกุล|last\s*name|surname|family/i,full:/ชื่อ\s*[-–]?\s*(นาม)?สกุล|full\s*name/i,
+    first:/^ชื่อ(จริง)?$|first\s*name|^name$|^ชื่อผู้|^ผู้เรียน|^ผู้เข้า|student\s*name/i,
+    code:/รหัส|^id$|student\s*id|^code$|เลขประจำตัว/i,prefix:/คำนำหน้า|^prefix$|^title$/i,org:/บริษัท|หน่วยงาน|องค์กร|company|organi[sz]ation/i,
+    eng:/อังกฤษ|english/i,skip:/^ลำดับ$|^#$|^ที่$|order|^seq|ประทับเวลา|timestamp|จำนวน/i};
+  let hi=-1,map={};
+  for(let i=0;i<Math.min(rows.length,10);i++){
+    const m={fulls:[]};let lastPrefix=null;
+    rows[i].forEach((h,j)=>{if(!h||RX.skip.test(h))return;
+      if(RX.prefix.test(h)){if(!RX.eng.test(h))lastPrefix=j;return}
+      if(RX.full.test(h)&&!RX.eng.test(h)){m.fulls.push([j,lastPrefix]);lastPrefix=null;return}
+      if(RX.nick.test(h)&&m.nick==null)m.nick=j;else if(RX.last.test(h)&&m.last==null)m.last=j;
+      else if(RX.org.test(h)&&m.org==null)m.org=j;else if(RX.code.test(h)&&m.code==null)m.code=j;
+      else if(RX.first.test(h)&&m.first==null){m.first=j;m.firstPrefix=lastPrefix}});
+    if(m.fulls.length||m.first!=null){hi=i;map=m;break}
+  }
+  const out=[];const seen=new Set();
+  const addP=(name,prefix,code,nick,org)=>{name=norm(name);if(!name||name==='-')return;
+    if(prefix&&!PREFIX.test(name))name=prefix+name;
+    const key=name.replace(PREFIX,'').replace(/\s/g,'')+'|'+code;if(seen.has(key))return;seen.add(key);out.push({name,code,nick,org})};
+  const data=hi>=0?rows.slice(hi+1):rows;
+  for(const r of data){
+    if(hi<0){addP(r.find(c=>c&&!/^[\d.\-#]+$/.test(c))||'','',norm(r.find(c=>/^\d[\d\-]*$/.test(c)&&c.length>2)||''),'','');continue}
+    const code=map.code!=null?norm(r[map.code]):'',nick=map.nick!=null?norm(r[map.nick]):'',org=map.org!=null&&r[map.org]!=='-'?norm(r[map.org]):'';
+    if(map.fulls.length){map.fulls.forEach(([j,pj],k)=>addP(r[j],pj!=null?r[pj]:'',k?'':code,k?'':nick,org))}
+    else addP([r[map.first],map.last!=null?r[map.last]:''].filter(Boolean).join(' '),map.firstPrefix!=null?r[map.firstPrefix]:'',code,nick,org);
+  }
+  return out;
+}
+function showPreview(people,fname){
+  const box=$('#preview');box.textContent='';
+  let mode=S.roster.length?'append':'replace';
+  const radios=el('div',{class:'radio'},
+    el('label',{},el('input',{type:'radio',name:'imode',value:'append',...(mode==='append'?{checked:true}:{}),onchange:()=>mode='append'}),'เพิ่มต่อจากรายชื่อเดิม (ข้ามชื่อซ้ำ)'),
+    el('label',{},el('input',{type:'radio',name:'imode',value:'replace',...(mode==='replace'?{checked:true}:{}),onchange:()=>mode='replace'}),'แทนที่รายชื่อเดิมทั้งหมด'));
+  const ol=el('ol');people.slice(0,300).forEach(p=>ol.append(el('li',{},p.name,(p.code||p.nick||p.org)?el('span',{style:'color:var(--muted);font-size:12.5px',text:'  '+[p.code,p.nick,p.org].filter(Boolean).join(' · ')}):null)));
+  if(people.length>300)ol.append(el('li',{style:'list-style:none;color:var(--muted)',text:'…และอีก '+(people.length-300)+' คน'}));
+  box.append(el('div',{class:'preview'},
+    el('div',{class:'ph'},el('span',{},'📄 ',el('b',{text:fname}),' — พบ ',el('b',{text:people.length}),' รายชื่อ'),el('button',{class:'btn sm ghost',onclick:()=>box.textContent=''},'ยกเลิก')),
+    ol,
+    el('div',{class:'pf'},radios,el('button',{class:'btn pri',style:'margin-left:auto',onclick:async e=>{
+      e.currentTarget.disabled=true;
+      let list;
+      if(mode==='replace'){
+        const old=new Map(S.roster.map(s=>[s.name+'|'+(s.code||''),s.id]));
+        list=people.map(p=>({id:old.get(p.name+'|'+p.code)||uid(),...p}));
+      }else{
+        const keys=new Set(S.roster.map(s=>s.name+'|'+(s.code||'')));
+        list=[...S.roster,...people.filter(p=>!keys.has(p.name+'|'+p.code)).map(p=>({id:uid(),...p}))];
+      }
+      try{await saveRoster(list);box.textContent='';toast('นำเข้ารายชื่อแล้ว — ทั้งหมด '+list.length+' คน')}catch(err){toast(errMsg(err),true);e.currentTarget.disabled=false}
+    }},'✓ นำเข้ารายชื่อ'))));
+  box.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+/* ---------- export ---------- */
+function exportRows(){
+  const head=['ลำดับ','รหัส','ชื่อ-นามสกุล','ชื่อเล่น','บริษัท/หน่วยงาน','วันที่','สถานะ','เวลาเช็คอิน','ตรงเวลา/สาย','สายกี่นาที','ลายเซ็น'];
+  const rows=S.roster.map((s,i)=>{const r=S.checkins[s.id];const li=r?lateInfo(r.time):null;
+    return[i+1,s.code||'',s.name,s.nick||'',s.org||'',S.date,r?'มาเรียน':'ขาด/ยังไม่มา',r?hms(r.time):'',r?(li.late?'สาย':'ตรงเวลา'):'',r&&li.late?li.diff:'',r&&r.sig?'✓ เซ็นแล้ว':'']});
+  return[head,...rows];
+}
+const csvCell=v=>{v=String(v??'');return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+async function saveFile(filename,data){
+  const dl=window.claude&&claude.use?await claude.use('downloads').catch(()=>null):null;
+  if(dl){try{await dl.save({filename,data});toast('บันทึกไฟล์แล้ว');return}catch(e){if(e&&e.code==='declined')return;if(e&&e.code==='rate_limited'){toast('มีหน้าต่างบันทึกเปิดอยู่แล้ว',true);return}}}
+  try{const blob=data instanceof Blob?data:new Blob([data]);const a=el('a',{href:URL.createObjectURL(blob),download:filename});document.body.append(a);a.click();a.remove();return}catch(e){}
+  toast('บันทึกไฟล์ไม่ได้ในหน้านี้ ใช้ปุ่มคัดลอกแทน',true);
+}
+$('#btnCsv').onclick=()=>{if(!S.roster.length){toast('ยังไม่มีรายชื่อ',true);return}saveFile(`attendance-${S.date}.csv`,'﻿'+exportRows().map(r=>r.map(csvCell).join(',')).join('\r\n'))};
+$('#btnXlsx').onclick=()=>{if(!S.roster.length){toast('ยังไม่มีรายชื่อ',true);return}if(!window.XLSX){toast('ตัวสร้างไฟล์ Excel ยังโหลดไม่เสร็จ ใช้ CSV แทน',true);return}
+  const ws=XLSX.utils.aoa_to_sheet(exportRows());ws['!cols']=[{wch:6},{wch:12},{wch:28},{wch:10},{wch:32},{wch:12},{wch:14},{wch:12},{wch:12},{wch:10},{wch:10}];
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,S.date);const out=XLSX.write(wb,{bookType:'xlsx',type:'array'});
+  saveFile(`attendance-${S.date}.xlsx`,new Blob([out]))};
+$('#btnCopySheet').onclick=async()=>{
+  if(!S.roster.length){toast('ยังไม่มีรายชื่อ',true);return}
+  const tsv=exportRows().map(r=>r.map(v=>String(v).replace(/[\t\n\r]+/g,' ')).join('\t')).join('\n');
+  try{await navigator.clipboard.writeText(tsv);toast('คัดลอกแล้ว — ไปวางใน Google Sheet ได้เลย')}
+  catch(e){const ta=el('textarea',{class:'out',readonly:true});ta.value=tsv;
+    openModal([el('div',{class:'mh'},el('div',{class:'who'},el('b',{text:'คัดลอกข้อมูล'}),el('span',{text:'เลือกข้อความทั้งหมดแล้วคัดลอก (Ctrl/⌘+C)'})),xBtn()),el('div',{class:'mb'},ta)]);setTimeout(()=>{ta.focus();ta.select()},50)}
+};
+$('#btnTemplate').onclick=()=>saveFile('student-list-template.csv','﻿'+[['รหัส','คำนำหน้า','ชื่อ','นามสกุล','ชื่อเล่น'],['6601001','นาย','สมชาย','ใจดี','ชาย'],['6601002','นางสาว','สมหญิง','รักเรียน','หญิง'],['6601003','นาย','ภูมิ','ปัญญาดี','ภูมิ']].map(r=>r.join(',')).join('\r\n'));
+
+/* ---------- kiosk ---------- */
+function pinModal(title,sub,cb){
+  const ins=[0,1,2,3].map(()=>el('input',{inputmode:'numeric',maxlength:'1',pattern:'[0-9]*',autocomplete:'off',type:'password'}));
+  ins.forEach((inp,i)=>{inp.addEventListener('input',()=>{inp.value=inp.value.replace(/\D/g,'').slice(-1);if(inp.value&&ins[i+1])ins[i+1].focus();if(ins.every(x=>x.value)){cb(ins.map(x=>x.value).join(''),()=>{ins.forEach(x=>x.value='');ins[0].focus()})}});
+    inp.addEventListener('keydown',e=>{if(e.key==='Backspace'&&!inp.value&&ins[i-1])ins[i-1].focus()})});
+  openModal([el('div',{class:'mh'},el('div',{class:'who'},el('b',{text:title}),el('span',{text:sub})),xBtn()),el('div',{class:'mb'},el('div',{class:'pin'},ins))]);
+  setTimeout(()=>ins[0].focus(),80);
+}
+$('#btnKiosk').onclick=()=>pinModal('ตั้งรหัส PIN','ใช้รหัสนี้เพื่อออกจากโหมดคีออสก์',pin=>{S.kiosk={pin};ls.set('attn-kiosk',S.kiosk);closeModal();setView('checkin');render();toast('เปิดโหมดคีออสก์แล้ว');
+  try{document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}});
+$('#kioskExit').onclick=()=>pinModal('ออกจากโหมดคีออสก์','กรอกรหัส PIN 4 หลัก',(pin,reset)=>{if(pin===S.kiosk.pin){S.kiosk=null;ls.set('attn-kiosk',null);closeModal();render();toast('ออกจากโหมดคีออสก์แล้ว');try{document.fullscreenElement&&document.exitFullscreen()}catch(e){}}else{toast('รหัสไม่ถูกต้อง',true);reset()}});
+
+/* ---------- admin unlock (Google Sheet mode) ---------- */
+$('#unlockForm').addEventListener('submit',async e=>{e.preventDefault();const k=$('#adminKeyIn').value.trim();if(!k){$('#adminKeyIn').focus();return}
+  const b=$('#btnUnlock');b.disabled=true;b.textContent='กำลังตรวจสอบ…';
+  try{const j=await store.ping(k);if(j.admin){S.adminKey=k;S.adminOk=true;S.sheetUrl=j.sheetUrl||'';ls.set('attn-admin-key',k);$('#adminKeyIn').value='';toast('ปลดล็อกเมนูจัดการแล้ว');render()}else toast('รหัสผู้ดูแลไม่ถูกต้อง',true)}
+  catch(err){toast(errMsg(err),true)}finally{b.disabled=false;b.textContent='ปลดล็อก'}});
+$('#btnLogout').onclick=()=>{S.adminKey='';S.adminOk=false;S.sheetUrl='';ls.set('attn-admin-key','');render();toast('ออกจากระบบผู้ดูแลแล้ว')};
+window.addEventListener('unhandledrejection',e=>{if(e.reason&&e.reason.code==='forbidden'&&S.mode==='sheets'){S.adminOk=false;S.adminKey='';ls.set('attn-admin-key','');render()}});
+
+/* ---------- events ---------- */
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>setView(b.dataset.v));
+document.querySelectorAll('#seg button').forEach(b=>b.onclick=()=>{S.filter=b.dataset.f;document.querySelectorAll('#seg button').forEach(x=>x.classList.toggle('on',x===b));renderGrid()});
+let qT;$('#q').addEventListener('input',e=>{clearTimeout(qT);qT=setTimeout(()=>{S.q=e.target.value;renderGrid()},120)});
+$('#sessionSel').onchange=e=>{S.date=e.target.value;subCheckins();render()};
+// roll over to the new day automatically if the page stays open past midnight
+setInterval(()=>{const t=dateKey();if(S._today&&S._today!==t&&S.date===S._today){S.date=t;subCheckins();renderSessions();render()}S._today=t},30000);S._today=dateKey();
+
+render();renderSessions();fillSettings();tick();boot();
+</script>
+</body>
+</html>
